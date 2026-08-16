@@ -1,0 +1,488 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Make In Motion — Brand Guidelines</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Yellowtail&family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#08070f; --surface:#131120; --surface2:#1b1830;
+    --ink:#f4f1fa; --clay:#ff2e88; --sage:#22e0ff; --violet:#a855f7;
+    --pinklit:#ff5ba3; --cyanlit:#7aeaff;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;background:var(--paper);color:var(--ink);
+    font-family:Montserrat,-apple-system,Segoe UI,sans-serif;
+    font-weight:400;line-height:1.65;position:relative;overflow-x:hidden;
+  }
+  body::before{
+    content:"";position:fixed;inset:0;z-index:-2;pointer-events:none;
+    background:
+      radial-gradient(ellipse 55% 65% at 0% 10%, rgba(34,224,255,.16), transparent 70%),
+      radial-gradient(ellipse 55% 65% at 100% 35%, rgba(255,46,136,.18), transparent 70%),
+      radial-gradient(ellipse 80% 50% at 50% 100%, rgba(168,85,247,.10), transparent 70%);
+  }
+  body::after{
+    content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.035;
+    background-image:linear-gradient(rgba(255,255,255,.7) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(255,255,255,.7) 1px,transparent 1px);
+    background-size:96px 34px;
+  }
+  .wrap{max-width:940px;margin:0 auto;padding:64px 28px 100px}
+  .display{font-family:Anton,Impact,sans-serif;text-transform:uppercase;line-height:.98;letter-spacing:.01em;font-weight:400}
+  .script{font-family:Yellowtail,cursive;text-transform:none}
+  .neon-pink{color:var(--pinklit);text-shadow:0 0 6px rgba(255,46,136,.85),0 0 22px rgba(255,46,136,.5),0 0 48px rgba(255,46,136,.25)}
+  .neon-cyan{color:var(--cyanlit);text-shadow:0 0 6px rgba(34,224,255,.85),0 0 22px rgba(34,224,255,.5),0 0 48px rgba(34,224,255,.25)}
+  .neon-white{color:#fff;text-shadow:0 0 8px rgba(255,255,255,.55),0 0 28px rgba(180,220,255,.35)}
+  .tube{width:3px;border-radius:99px;background:linear-gradient(180deg,transparent,currentColor 12%,currentColor 88%,transparent);box-shadow:0 0 10px currentColor,0 0 28px currentColor}
+
+  h1{font-size:clamp(48px,9vw,86px);margin:14px 0 6px}
+  h2{font-size:clamp(28px,4.5vw,40px);margin:0 0 6px}
+  h3{font-size:19px;font-weight:700;margin:0 0 6px}
+  .eyebrow{font-size:11px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--sage);margin:0}
+  section{margin-top:74px;scroll-margin-top:20px}
+  .lede{font-size:18px;color:rgba(244,241,250,.78);max-width:64ch}
+  p{max-width:70ch}
+  .muted{color:rgba(244,241,250,.62)}
+  .small{font-size:14px}
+  .card{background:rgba(19,17,32,.8);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:24px}
+  hr{border:none;border-top:1px solid rgba(255,255,255,.1);margin:0}
+
+  /* colour */
+  .swatches{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin-top:22px}
+  .sw{border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,.1)}
+  .sw .chip{height:96px}
+  .sw .meta{padding:12px 14px;background:rgba(19,17,32,.8)}
+  .sw .name{font-weight:700;font-size:14px}
+  .sw code{font-size:12px;color:rgba(244,241,250,.6);font-family:ui-monospace,Menlo,monospace}
+  .sw .role{font-size:12.5px;color:rgba(244,241,250,.6);margin-top:5px;line-height:1.45}
+
+  table{width:100%;border-collapse:collapse;margin-top:18px;font-size:14px}
+  th,td{text-align:left;padding:9px 10px;border-bottom:1px solid rgba(255,255,255,.08);vertical-align:top}
+  th{color:rgba(244,241,250,.5);font-weight:700;font-size:11px;letter-spacing:.12em;text-transform:uppercase}
+  .pass{color:#5ce0a0;font-weight:700}
+  .warn{color:#ffc866;font-weight:700}
+  .fail{color:var(--pinklit);font-weight:700}
+
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:20px}
+  @media(max-width:720px){.two{grid-template-columns:1fr}}
+  .do,.dont{border-radius:14px;padding:18px 20px;border:1px solid}
+  .do{border-color:rgba(34,224,255,.32);background:rgba(34,224,255,.06)}
+  .dont{border-color:rgba(255,46,136,.32);background:rgba(255,46,136,.06)}
+  .do h4,.dont h4{margin:0 0 10px;font-size:12px;letter-spacing:.16em;text-transform:uppercase}
+  .do h4{color:var(--cyanlit)} .dont h4{color:var(--pinklit)}
+  .do p,.dont p{margin:0 0 8px;font-size:15px}
+  .do p:last-child,.dont p:last-child{margin-bottom:0}
+
+  .specimen{border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:26px;margin-top:16px;background:rgba(19,17,32,.55)}
+  .specimen .label{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:rgba(244,241,250,.45);margin-bottom:14px}
+
+  .btn-pink{display:inline-block;background:var(--clay);color:var(--paper);font-weight:800;text-transform:uppercase;letter-spacing:.04em;padding:13px 24px;border-radius:9px;box-shadow:0 0 12px rgba(255,46,136,.55),0 0 40px rgba(255,46,136,.25);text-decoration:none;font-size:15px}
+  .btn-ghost{display:inline-block;border:2px solid rgba(34,224,255,.6);color:var(--sage);font-weight:800;text-transform:uppercase;letter-spacing:.04em;padding:11px 22px;border-radius:9px;text-decoration:none;font-size:15px}
+  .badge{display:inline-block;border-radius:99px;padding:5px 11px;font-size:12px;font-weight:700}
+
+  ul{max-width:70ch;padding-left:20px}
+  li{margin-bottom:7px}
+  .toc a{color:rgba(244,241,250,.7);text-decoration:none;font-size:14px;display:block;padding:3px 0}
+  .toc a:hover{color:var(--sage)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <p class="eyebrow">Brand Guidelines · v1.0 · August 2026</p>
+  <h1 class="display"><span class="neon-white">Make in</span><br><span class="neon-pink">Motion</span></h1>
+  <p class="lede">A pop-up creative experience that turns your space into an interactive art night.</p>
+
+  <div class="card" style="margin-top:34px">
+    <div class="toc">
+      <a href="#essence">01 — What the brand is</a>
+      <a href="#voice">02 — Voice &amp; tone</a>
+      <a href="#colour">03 — Colour</a>
+      <a href="#type">04 — Typography</a>
+      <a href="#neon">05 — The neon rule</a>
+      <a href="#wordmark">06 — Wordmark</a>
+      <a href="#photo">07 — Photography</a>
+      <a href="#apply">08 — Applications</a>
+      <a href="#never">09 — Never do this</a>
+    </div>
+  </div>
+
+  <!-- ------------------------------------------------------------ 01 -->
+  <section id="essence">
+    <p class="eyebrow">01</p>
+    <h2 class="display">What the brand is</h2>
+    <p class="lede">A night out that happens to produce art — not an art class that happens to be at a bar.</p>
+
+    <p>That distinction drives every decision in here. The audience isn't artists. It's people
+    who want a good Tuesday, and who would be put off by anything that looks like a studio,
+    a gallery, or a craft store. The palette is nightlife. The type is a gig poster. The
+    photography is people laughing, not finished canvases.</p>
+
+    <h3 style="margin-top:28px">Three things that must always be true</h3>
+    <ul>
+      <li><strong>Low pressure.</strong> No perfection, no experience needed, no judgement. If a
+      line of copy could make someone feel like they'd be bad at this, cut it.</li>
+      <li><strong>High energy.</strong> Social, loud, a bit messy. Neon, not pastel.</li>
+      <li><strong>Everything handled.</strong> We bring it all. The guest brings themselves; the
+      venue brings tables. That promise is the product.</li>
+    </ul>
+
+    <h3 style="margin-top:28px">Two audiences, one brand</h3>
+    <p>Guests and venue managers read completely different things. Guests are buying a night out.
+    Venue managers are buying revenue on a dead Tuesday. Same colours, same type — but the venue
+    material leads with money and logistics, never with creativity.</p>
+  </section>
+
+  <!-- ------------------------------------------------------------ 02 -->
+  <section id="voice">
+    <p class="eyebrow">02</p>
+    <h2 class="display">Voice &amp; tone</h2>
+    <p class="lede">Warm, plain-spoken, a little dry. Like a friend who's organised something
+    good and isn't going to oversell it.</p>
+
+    <div class="two">
+      <div class="do">
+        <h4>Do</h4>
+        <p>"You'll surprise yourself. People who swear they can't draw leave with something they actually hang up."</p>
+        <p>"Wear something you don't mind getting paint on."</p>
+        <p>"Fill a slow Tuesday."</p>
+        <p>"Just bring yourself."</p>
+      </div>
+      <div class="dont">
+        <h4>Don't</h4>
+        <p>"Unleash your inner artist!" — nobody talks like this.</p>
+        <p>"Embark on a creative journey of self-expression."</p>
+        <p>"Curated artisanal experiences."</p>
+        <p>"Book now!!! 🎨✨🍷"</p>
+      </div>
+    </div>
+
+    <h3 style="margin-top:32px">Rules</h3>
+    <ul>
+      <li><strong>Short sentences.</strong> If it needs a comma splice to hold together, split it.</li>
+      <li><strong>Say the real thing.</strong> "50% refund. Materials have already been ordered
+      and prepped for your seat" beats "partial refunds may apply."</li>
+      <li><strong>Never use exclamation marks in body copy.</strong> The neon is already shouting.</li>
+      <li><strong>Emoji: sparingly on social, never on the site or in email.</strong></li>
+      <li><strong>Lowercase "art night," never "Art Night."</strong> Title Case makes it sound corporate.</li>
+      <li><strong>Address one person, not a crowd.</strong> "You," not "guests" or "attendees" —
+      except in venue material, where "guests" is correct because you're describing their customers.</li>
+    </ul>
+
+    <h3 style="margin-top:28px">Words we use</h3>
+    <p class="small muted">art night · spot · session · we bring · you bring · no pressure ·
+    no perfection · 21+ · low key · messy · sharable</p>
+    <h3 style="margin-top:18px">Words we avoid</h3>
+    <p class="small muted">class · student · pupil · instructor-led · curated · artisanal ·
+    unleash · journey · masterpiece · workshop attendee</p>
+    <p class="small muted" style="margin-top:8px"><em>"Workshop" is fine as a noun for the
+    activity itself — it's the catalogue word. Just never call the guest a student.</em></p>
+  </section>
+
+  <!-- ------------------------------------------------------------ 03 -->
+  <section id="colour">
+    <p class="eyebrow">03</p>
+    <h2 class="display">Colour</h2>
+    <p class="lede">Neon signage against a dark bar. Two lit tubes — one hot, one cold — over
+    near-black.</p>
+
+    <div class="swatches">
+      <div class="sw"><div class="chip" style="background:#08070f;border-bottom:1px solid rgba(255,255,255,.1)"></div>
+        <div class="meta"><div class="name">Midnight</div><code>#08070F · rgb(8,7,15)</code>
+        <div class="role">The default background. Everywhere. Blue-black, never neutral grey.</div></div></div>
+
+      <div class="sw"><div class="chip" style="background:#131120;border-bottom:1px solid rgba(255,255,255,.1)"></div>
+        <div class="meta"><div class="name">Surface</div><code>#131120 · rgb(19,17,32)</code>
+        <div class="role">Cards and panels. Usually at 80% so the neon wash shows through.</div></div></div>
+
+      <div class="sw"><div class="chip" style="background:#ff2e88"></div>
+        <div class="meta"><div class="name">Hot Pink</div><code>#FF2E88 · rgb(255,46,136)</code>
+        <div class="role">Primary accent. Actions, the thing you want clicked. One per screen.</div></div></div>
+
+      <div class="sw"><div class="chip" style="background:#22e0ff"></div>
+        <div class="meta"><div class="name">Electric Cyan</div><code>#22E0FF · rgb(34,224,255)</code>
+        <div class="role">Secondary accent. Labels, secondary buttons, positive states.</div></div></div>
+
+      <div class="sw"><div class="chip" style="background:#a855f7"></div>
+        <div class="meta"><div class="name">Violet</div><code>#A855F7 · rgb(168,85,247)</code>
+        <div class="role">Support only. Gradients and artwork. Never for text or UI.</div></div></div>
+
+      <div class="sw"><div class="chip" style="background:#f4f1fa;border-bottom:1px solid rgba(255,255,255,.1)"></div>
+        <div class="meta"><div class="name">Paper White</div><code>#F4F1FA · rgb(244,241,250)</code>
+        <div class="role">All body text. Faintly violet — pure #FFF looks harsh on midnight.</div></div></div>
+    </div>
+
+    <h3 style="margin-top:34px">Proportions</h3>
+    <p>Roughly <strong>75% midnight, 15% white text, 10% neon.</strong> The neon only works
+    because there's so little of it. When a layout stops feeling like a bar and starts feeling
+    like a rave flyer, you've used too much.</p>
+
+    <h3 style="margin-top:28px">Which accent, when</h3>
+    <ul>
+      <li><strong>Pink = do something.</strong> Buy, submit, the primary path.</li>
+      <li><strong>Cyan = information.</strong> Section labels, availability, "you're in."</li>
+      <li>Never put pink and cyan against each other as text and background. They vibrate.</li>
+    </ul>
+
+    <h3 style="margin-top:28px">Contrast — measured, not guessed</h3>
+    <table>
+      <tr><th>Combination</th><th>Ratio</th><th>Verdict</th></tr>
+      <tr><td>Paper white on midnight</td><td>17.95:1</td><td class="pass">AAA</td></tr>
+      <tr><td>Paper white on surface</td><td>16.66:1</td><td class="pass">AAA</td></tr>
+      <tr><td>Cyan on midnight</td><td>12.58:1</td><td class="pass">AAA</td></tr>
+      <tr><td>Midnight on cyan</td><td>12.58:1</td><td class="pass">AAA</td></tr>
+      <tr><td>Pink on midnight</td><td>5.73:1</td><td class="pass">AA</td></tr>
+      <tr><td>Midnight on pink</td><td>5.73:1</td><td class="pass">AA</td></tr>
+      <tr><td>Violet on midnight</td><td>5.07:1</td><td class="pass">AA</td></tr>
+      <tr><td><strong>White on pink</strong></td><td>3.50:1</td><td class="fail">Large text only</td></tr>
+    </table>
+    <div class="card" style="margin-top:18px;border-color:rgba(255,200,102,.3);background:rgba(255,200,102,.05)">
+      <h3 style="color:#ffc866">One rule that comes out of this</h3>
+      <p style="margin:0"><strong>Put midnight text on pink buttons, not white.</strong> White on
+      hot pink measures 3.50:1, which only passes for text 24px+ (or 18.7px+ bold). Black-on-neon
+      is also more authentically the signage look. Cyan buttons should also carry midnight text.</p>
+      <p style="margin:10px 0 0" class="small muted">The site currently uses white on pink. It's a
+      one-line fix and worth doing.</p>
+    </div>
+  </section>
+
+  <!-- ------------------------------------------------------------ 04 -->
+  <section id="type">
+    <p class="eyebrow">04</p>
+    <h2 class="display">Typography</h2>
+    <p class="lede">Three faces, three jobs, no exceptions. All free on Google Fonts.</p>
+
+    <div class="specimen">
+      <div class="label">Display — Anton · 400 (only weight) · always uppercase</div>
+      <div class="display" style="font-size:clamp(40px,7vw,68px)">Create with Make in Motion</div>
+      <p class="small muted" style="margin-top:14px">Headlines, event titles, section headers,
+      numbers you want people to notice. Anton has one weight and it's heavy — that's the point.
+      Set tight: line-height 0.95–1.0, letter-spacing 0.01em. Never lighten it, never use it below
+      about 18px, never for more than one sentence.</p>
+    </div>
+
+    <div class="specimen">
+      <div class="label">Accent — Yellowtail · 400 · sentence case</div>
+      <div class="script" style="font-size:clamp(30px,5.5vw,46px);color:var(--sage)">15+ activities to choose from</div>
+      <div class="script" style="font-size:clamp(26px,4.5vw,38px);color:var(--clay);margin-top:6px">Let's make it a date</div>
+      <p class="small muted" style="margin-top:14px">The human hand in an otherwise hard design.
+      Use it for one phrase per page — a warm aside, a sign-off, a number worth bragging about.
+      Always in pink or cyan, never white. Never for anything a reader must read to complete a
+      task, and never below 24px.</p>
+    </div>
+
+    <div class="specimen">
+      <div class="label">Body — Montserrat · 300 / 400 / 600 / 700 / 800</div>
+      <p style="font-size:17px;margin:0">You'll start a canvas, then rotate throughout the night —
+      adding, layering, and transforming each piece along the way. No pressure, no perfection,
+      just a fun, evolving process that ends in something completely unexpected.</p>
+      <p style="font-size:14px;text-transform:uppercase;letter-spacing:.14em;margin:16px 0 0;color:rgba(244,241,250,.62)">
+        Guided &amp; freestyle art sessions · 2–3 hour event · social, high energy, sharable</p>
+      <p class="small muted" style="margin-top:14px">Everything else. The wide-tracked uppercase
+      treatment above is the signature move — use it for spec lines and labels, never for
+      paragraphs.</p>
+    </div>
+
+    <h3 style="margin-top:32px">Scale</h3>
+    <table>
+      <tr><th>Role</th><th>Face</th><th>Size</th><th>Treatment</th></tr>
+      <tr><td>Hero</td><td>Anton</td><td>60–96px</td><td>Uppercase, line-height .92</td></tr>
+      <tr><td>Page title</td><td>Anton</td><td>40–56px</td><td>Uppercase</td></tr>
+      <tr><td>Section head</td><td>Anton</td><td>24–32px</td><td>Uppercase</td></tr>
+      <tr><td>Accent line</td><td>Yellowtail</td><td>28–44px</td><td>Pink or cyan</td></tr>
+      <tr><td>Eyebrow / label</td><td>Montserrat 700</td><td>11–12px</td><td>Uppercase, .22em tracking, cyan</td></tr>
+      <tr><td>Body</td><td>Montserrat 400</td><td>15–17px</td><td>Line-height 1.65</td></tr>
+      <tr><td>Button</td><td>Montserrat 800</td><td>15–16px</td><td>Uppercase, .04em tracking</td></tr>
+      <tr><td>Fine print</td><td>Montserrat 400</td><td>12–13px</td><td>62% white</td></tr>
+    </table>
+
+    <p class="small muted" style="margin-top:16px"><strong>Fallbacks:</strong> Anton → Impact →
+    sans-serif. Yellowtail → cursive. Montserrat → system sans. For print or anything where
+    Google Fonts isn't available, Anton substitutes reasonably with Oswald Bold or Bebas Neue.</p>
+  </section>
+
+  <!-- ------------------------------------------------------------ 05 -->
+  <section id="neon">
+    <p class="eyebrow">05</p>
+    <h2 class="display">The neon rule</h2>
+    <p class="lede">Glow is rationed. Everything lit means nothing reads as lit.</p>
+
+    <p><strong>Maximum two glowing elements per screen.</strong> The headline, and at most one
+    other thing. Body copy never glows. Buttons get a soft outer glow, never a text glow.</p>
+
+    <div class="specimen">
+      <div class="label">The glow, at three intensities</div>
+      <div style="display:flex;gap:34px;flex-wrap:wrap;align-items:baseline">
+        <span class="display neon-pink" style="font-size:38px">Hot</span>
+        <span class="display neon-cyan" style="font-size:38px">Cold</span>
+        <span class="display neon-white" style="font-size:38px">Lit white</span>
+      </div>
+      <p class="small muted" style="margin-top:16px">Three stacked shadows: a tight 6px core, a
+      22px bloom, a 48px haze. The lit colour is always a step <em>lighter</em> than the base —
+      pink text glows as #FF5BA3, not #FF2E88, because a real tube is brightest at its centre.</p>
+    </div>
+
+    <div class="specimen">
+      <div class="label">Light tubes</div>
+      <div style="display:flex;gap:26px;height:70px;align-items:stretch">
+        <span class="tube" style="color:#22e0ff"></span>
+        <span class="tube" style="color:#ff2e88"></span>
+        <span class="tube" style="color:#a855f7"></span>
+      </div>
+      <p class="small muted" style="margin-top:16px">A 3px vertical rule that fades at both ends.
+      Use one to the left of a hero, or to frame a card. Never horizontal — real tubes hang vertical.</p>
+    </div>
+
+    <h3 style="margin-top:30px">Background wash</h3>
+    <p>Every screen carries the same fixed lighting: cyan from the upper left, pink from the
+    right, a faint violet pool at the bottom. Plus a barely-visible brick grid at 3.5% opacity.
+    It's fixed, not scrolling — the room stays lit as you move through it.</p>
+  </section>
+
+  <!-- ------------------------------------------------------------ 06 -->
+  <section id="wordmark">
+    <p class="eyebrow">06</p>
+    <h2 class="display">Wordmark</h2>
+
+    <div class="specimen">
+      <div class="label">Primary lockup</div>
+      <div style="display:flex;gap:16px;align-items:stretch">
+        <span class="tube" style="color:#22e0ff"></span>
+        <div>
+          <div class="display" style="font-size:44px"><span class="neon-white">Make in</span> <span class="neon-pink">Motion</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="specimen">
+      <div class="label">With the script connector — for hero and print</div>
+      <div class="display" style="font-size:clamp(38px,7vw,64px)">
+        <span class="neon-white">Create</span>
+        <span class="script" style="font-size:.55em;text-transform:none;color:var(--clay)">with</span><br>
+        <span class="neon-pink">Make in Motion</span>
+      </div>
+    </div>
+
+    <ul style="margin-top:24px">
+      <li><strong>"Make in Motion"</strong> — capital M on Make and Motion, lowercase "in". Not
+      "Make In Motion", not "MAKE IN MOTION" outside of Anton settings (where it's uppercase by design).</li>
+      <li>"Motion" carries the pink. "Make in" stays white. Don't swap them.</li>
+      <li>Clear space: at least the cap-height of the M on all sides.</li>
+      <li>On a photo, put it on the darkest quarter of the frame, or add a scrim first.</li>
+      <li>Minimum size: 120px wide on screen, 25mm in print. Below that, drop the glow — it
+      turns to mud.</li>
+      <li>One-colour version: all white on midnight, or all midnight on white. Never all pink.</li>
+    </ul>
+  </section>
+
+  <!-- ------------------------------------------------------------ 07 -->
+  <section id="photo">
+    <p class="eyebrow">07</p>
+    <h2 class="display">Photography</h2>
+    <p class="lede">People, mid-laugh, holding a drink. Not finished artwork on a clean table.</p>
+
+    <div class="two">
+      <div class="do">
+        <h4>Shoot this</h4>
+        <p>Wide shots of a full table with faces in them.</p>
+        <p>Warm interior light — brick, string lights, the bar behind.</p>
+        <p>Hands in motion, paint on fingers, half-finished pieces.</p>
+        <p>Drinks in frame. It's a night out.</p>
+        <p>Slight mess. Palettes, cups, crumbs.</p>
+      </div>
+      <div class="dont">
+        <h4>Not this</h4>
+        <p>Finished canvases photographed alone.</p>
+        <p>Empty rooms and tidy setups.</p>
+        <p>Flash. It kills the warm light and flattens everything.</p>
+        <p>Anything that looks like a classroom.</p>
+        <p>Stock photos of paintbrushes.</p>
+      </div>
+    </div>
+
+    <p style="margin-top:22px">Treatment: 3:2 landscape, 1600px wide, under 400KB. When a photo
+    sits behind type, drop it to roughly 38% opacity, add a dark gradient scrim, and overlay a
+    pink/cyan wash so it belongs to the palette.</p>
+
+    <p class="small muted"><strong>Where photos don't exist yet</strong>, the site generates a neon
+    placeholder — brick texture, a lit tube, the title glowing. Perfectly acceptable, but a real
+    photo beats it every time. Shoot 3–4 usable frames at every event.</p>
+  </section>
+
+  <!-- ------------------------------------------------------------ 08 -->
+  <section id="apply">
+    <p class="eyebrow">08</p>
+    <h2 class="display">Applications</h2>
+
+    <div class="specimen">
+      <div class="label">Buttons</div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center">
+        <a href="#" class="btn-pink">Reserve &amp; pay — $45</a>
+        <a href="#" class="btn-ghost">Host a night</a>
+      </div>
+      <p class="small muted" style="margin-top:16px">Primary is solid pink with a soft outer
+      glow and <strong>midnight text</strong>. Secondary is a cyan outline that fills on hover.
+      Both uppercase, 800 weight, 9px radius. One primary per screen.</p>
+    </div>
+
+    <div class="specimen">
+      <div class="label">Status badges</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <span class="badge" style="background:rgba(34,224,255,.15);color:var(--sage)">13 spots left</span>
+        <span class="badge" style="background:rgba(255,46,136,.15);color:var(--pinklit)">Only 2 spots left</span>
+        <span class="badge" style="background:rgba(255,255,255,.1);color:rgba(244,241,250,.5)">Sold out</span>
+        <span class="badge" style="background:rgba(255,255,255,.1);color:rgba(244,241,250,.7)">21+</span>
+      </div>
+      <p class="small muted" style="margin-top:16px">Cyan when there's room, pink when it's
+      running out, grey when it's gone. Scarcity earns the hot colour.</p>
+    </div>
+
+    <div class="specimen">
+      <div class="label">Cards</div>
+      <p class="small muted" style="margin:0">16px radius, surface at 80% opacity, 1px white
+      border at 10%. The transparency matters — it lets the background wash through so cards
+      feel lit rather than pasted on.</p>
+    </div>
+
+    <div class="specimen">
+      <div class="label">Email — the deliberate exception</div>
+      <p class="small muted" style="margin:0">Transactional email stays on a <strong>light</strong>
+      background. Dark HTML email renders unpredictably across Outlook and Gmail, and the
+      confirmation email is the customer's ticket — the wrong place to be clever. Keep the
+      wordmark and the pink accent; drop the dark background and the glow.</p>
+    </div>
+  </section>
+
+  <!-- ------------------------------------------------------------ 09 -->
+  <section id="never">
+    <p class="eyebrow">09</p>
+    <h2 class="display">Never do this</h2>
+    <ul>
+      <li><strong>Light backgrounds on the website.</strong> The brand is a dark room. Email is
+      the only exception.</li>
+      <li><strong>Pastels.</strong> Sage green, dusty rose, beige, kraft paper. That's the craft-fair
+      brand this one is deliberately not.</li>
+      <li><strong>Glow on body copy.</strong> It's unreadable and it cheapens the headline.</li>
+      <li><strong>Anton in a paragraph.</strong> One sentence maximum, always.</li>
+      <li><strong>Yellowtail for anything functional.</strong> No script buttons, labels, or form fields.</li>
+      <li><strong>Rainbow gradients.</strong> Two accents. Violet supports; it doesn't join in.</li>
+      <li><strong>Stretching or recolouring the wordmark.</strong></li>
+      <li><strong>Exclamation marks in body copy.</strong></li>
+      <li><strong>Calling it a class or the guests students.</strong></li>
+    </ul>
+  </section>
+
+  <hr style="margin-top:70px">
+  <p class="small muted" style="margin-top:22px">
+    Make In Motion · makeinmotionct@gmail.com · 860-348-7466 · makeinmotion.com<br>
+    Brand guidelines v1.0. Colour values match <code>tailwind.config.ts</code>; contrast ratios
+    measured to WCAG 2.1. Update both together.
+  </p>
+</div>
+</body>
+</html>

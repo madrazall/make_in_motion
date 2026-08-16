@@ -1,0 +1,35 @@
+node_modules/
+.next/
+.open-next/
+out/
+build/
+
+.env
+.env.local
+.env*.local
+
+.wrangler/
+cloudflare-env.d.ts
+
+.DS_Store
+*.pem
+npm-debug.log*
+yarn-error.log*
+.vercel
+*.tsbuildinfo
+next-env.d.ts
+
+# Generated UI snapshot — ~28MB, rebuilt on demand. Not source.
+ui-preview/
+
+# Original uncompressed photos. Keep them somewhere backed up, but they don't
+# belong in the repo — the optimised versions in public/images/ are what ship.
+*.psd
+*.heic
+
+# OpenOffice lock files
+.~lock.*#
+
+# Personal / unrelated files that landed in this folder — not project source.
+Proposed_Parenting_Plan.odt
+Signup-tracker.xlsx

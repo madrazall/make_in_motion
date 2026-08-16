@@ -1,0 +1,105 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+body {
+  @apply bg-paper text-ink antialiased;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/*
+ * The two neon tubes from the flyer — a cool wash from the left, a hot one from
+ * the right. Fixed and behind everything so long pages keep the same lighting.
+ */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 55% 65% at 0% 12%, rgba(34, 224, 255, 0.16), transparent 70%),
+    radial-gradient(ellipse 55% 65% at 100% 32%, rgba(255, 46, 136, 0.18), transparent 70%),
+    radial-gradient(ellipse 80% 50% at 50% 100%, rgba(168, 85, 247, 0.10), transparent 70%);
+}
+
+/* Faint brick grid, barely there — texture rather than decoration. */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.035;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.7) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.7) 1px, transparent 1px);
+  background-size: 96px 34px;
+}
+
+@layer components {
+  /* Lit neon text. Use sparingly — everything glowing means nothing glows. */
+  .neon-pink {
+    color: #ff5ba3;
+    text-shadow: 0 0 6px rgba(255, 46, 136, 0.85), 0 0 22px rgba(255, 46, 136, 0.5),
+      0 0 48px rgba(255, 46, 136, 0.25);
+  }
+  .neon-cyan {
+    color: #7aeaff;
+    text-shadow: 0 0 6px rgba(34, 224, 255, 0.85), 0 0 22px rgba(34, 224, 255, 0.5),
+      0 0 48px rgba(34, 224, 255, 0.25);
+  }
+  .neon-white {
+    color: #fff;
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.55), 0 0 28px rgba(180, 220, 255, 0.35);
+  }
+
+  /* A vertical light tube, like the ones framing the flyer. */
+  .tube {
+    @apply rounded-full;
+    width: 3px;
+    background: linear-gradient(180deg, transparent, currentColor 12%, currentColor 88%, transparent);
+    box-shadow: 0 0 10px currentColor, 0 0 28px currentColor;
+  }
+
+  .card {
+    @apply rounded-2xl border border-white/10 bg-surface/80 backdrop-blur-sm;
+  }
+
+  .field {
+    @apply w-full rounded-lg border border-white/15 bg-white/[0.04] px-3 py-2.5
+           text-[16px] text-ink placeholder:text-ink/35
+           focus:border-sage focus:outline-none focus:ring-2 focus:ring-sage/25;
+  }
+
+  .btn-primary {
+    @apply rounded-lg bg-clay px-5 py-3.5 font-bold uppercase tracking-wide text-white
+           shadow-neon-pink transition-all hover:bg-clay/90
+           disabled:opacity-30 disabled:shadow-none disabled:cursor-not-allowed;
+  }
+
+  .btn-ghost {
+    @apply rounded-lg border-2 border-sage/60 px-5 py-3 font-bold uppercase tracking-wide
+           text-sage transition-all hover:bg-sage hover:text-paper hover:shadow-neon-cyan
+           disabled:opacity-30;
+  }
+
+  .eyebrow {
+    @apply text-xs font-bold uppercase tracking-[0.22em] text-sage;
+  }
+}
+
+/* Anton is all-caps by design and sits tight; give it room to breathe. */
+.font-display {
+  letter-spacing: 0.01em;
+  line-height: 0.98;
+}
+
+::selection {
+  background: rgba(255, 46, 136, 0.35);
+}

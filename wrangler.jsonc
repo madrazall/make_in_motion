@@ -1,0 +1,38 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "make-in-motion",
+
+  // Points at our wrapper, NOT .open-next/worker.js directly. The wrapper
+  // re-exports OpenNext's fetch handler and adds the scheduled() handler that
+  // the cron trigger below needs. See worker.ts.
+  "main": "worker.ts",
+  "compatibility_date": "2026-08-01",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "observability": {
+    "enabled": true
+  },
+
+  // Sweeps expired seat holds. Cloudflare's free plan allows a 1-minute minimum;
+  // Vercel Hobby would only permit once per day, which is why we're here.
+  // This is the BACKUP path — Stripe's checkout.session.expired webhook is primary.
+  "triggers": {
+    "crons": ["*/5 * * * *"]
+  },
+
+  "vars": {
+    "NEXT_PUBLIC_SITE_URL": "https://makeinmotion.com",
+    "SITE_TIMEZONE": "America/New_York"
+  }
+
+  // Secrets are NOT stored here. Set them with:
+  //   wrangler secret put STRIPE_SECRET_KEY
+  //   wrangler secret put STRIPE_WEBHOOK_SECRET
+  //   wrangler secret put SUPABASE_SERVICE_ROLE_KEY
+  //   wrangler secret put RESEND_API_KEY
+  //   wrangler secret put ADMIN_PASSWORD
+  //   wrangler secret put CRON_SECRET
+}
