@@ -16,6 +16,12 @@
     "enabled": true
   },
 
+  // Root domain only — no www. Booking lives at makeinmotion.com/events per
+  // PLAN-v2.md §14: one less thing to explain to a customer at a brewery.
+  "routes": [
+    { "pattern": "makeinmotion.com", "custom_domain": true }
+  ],
+
   // Sweeps expired seat holds. Cloudflare's free plan allows a 1-minute minimum;
   // Vercel Hobby would only permit once per day, which is why we're here.
   // This is the BACKUP path — Stripe's checkout.session.expired webhook is primary.
@@ -25,7 +31,10 @@
 
   "vars": {
     "NEXT_PUBLIC_SITE_URL": "https://makeinmotion.com",
-    "SITE_TIMEZONE": "America/New_York"
+    "SITE_TIMEZONE": "America/New_York",
+    // Card checkout is live. Flipping this back to "manual" is the one-line
+    // rollback if Stripe ever needs to come off — see lib/config.ts.
+    "NEXT_PUBLIC_PAYMENT_MODE": "stripe"
   }
 
   // Secrets are NOT stored here. Set them with:

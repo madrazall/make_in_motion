@@ -52,7 +52,7 @@ export function ManualBooking({
   ].join("\n");
 
   const mailto =
-    `mailto:${BUSINESS.email}` +
+    `mailto:${BUSINESS.bookingEmail}` +
     `?subject=${encodeURIComponent(subject)}` +
     `&body=${encodeURIComponent(body)}`;
 
@@ -152,8 +152,8 @@ export function ManualBooking({
 
         <p className="mt-2.5 text-center text-xs text-ink/50">
           Either works —{" "}
-          <a href={`mailto:${BUSINESS.email}`} className="text-clay underline underline-offset-2">
-            {BUSINESS.email}
+          <a href={`mailto:${BUSINESS.bookingEmail}`} className="text-clay underline underline-offset-2">
+            {BUSINESS.bookingEmail}
           </a>
         </p>
       </div>

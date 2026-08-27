@@ -1,11 +1,13 @@
 import type { Metadata, Viewport } from "next";
 import Link from "next/link";
+import Script from "next/script";
 import "./globals.css";
 import {
   BUSINESS,
   siteUrl,
   instagramUrl,
   PAYMENT_HANDLES,
+  GA_MEASUREMENT_ID,
 } from "@/lib/config";
 import { isDemoMode } from "@/lib/demo";
 
@@ -42,6 +44,24 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body className="min-h-screen flex flex-col">
+        {/* Skipped in demo/preview mode so local browsing never pollutes real traffic data. */}
+        {!isDemoMode() && (
+          <>
+            <Script
+              src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
+              strategy="afterInteractive"
+            />
+            <Script id="ga4-init" strategy="afterInteractive">
+              {`
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', '${GA_MEASUREMENT_ID}');
+              `}
+            </Script>
+          </>
+        )}
+
         {isDemoMode() && (
           <div className="border-b border-white/10 bg-black/60 px-5 py-2 text-center text-xs text-ink/70">
             <strong className="font-semibold text-sage">Preview mode</strong> — sample
@@ -102,10 +122,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   rel="noopener noreferrer"
                   className="font-semibold text-sage hover:text-clay"
                 >
-                  @{PAYMENT_HANDLES.instagram}
+                  Instagram @{PAYMENT_HANDLES.instagram}
                 </a>
-                <a href={`mailto:${BUSINESS.email}`} className="hover:text-clay">
-                  {BUSINESS.email}
+                <a href={`mailto:${BUSINESS.contactEmail}`} className="hover:text-clay">
+                  {BUSINESS.contactEmail}
                 </a>
                 <a href={BUSINESS.phoneHref} className="hover:text-clay">
                   {BUSINESS.phone}

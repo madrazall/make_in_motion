@@ -1,5 +1,21 @@
 export type EventStatus = "draft" | "published" | "completed" | "cancelled";
 
+export type ContentPlatform = "instagram" | "email";
+export type ContentStatus = "idea" | "drafted" | "scheduled" | "posted";
+
+export interface ContentPost {
+  id: string;
+  platform: ContentPlatform;
+  status: ContentStatus;
+  scheduled_date: string;
+  caption: string;
+  image_url: string | null;
+  notes: string | null;
+  event_id: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 export type OrderStatus =
   | "pending"
   | "paid"
@@ -29,6 +45,7 @@ export interface EventRow {
   description: string;
   image_url: string | null;
   venue_id: string;
+  workshop_id: string | null;
   starts_at: string;
   ends_at: string;
   capacity: number;

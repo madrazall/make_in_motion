@@ -42,10 +42,10 @@ export default function FaqPage() {
             <strong>put your name and how many spots in the payment note</strong> —
             that&apos;s how we match the money to you. Then email{" "}
             <a
-              href={`mailto:${BUSINESS.email}`}
+              href={`mailto:${BUSINESS.contactEmail}`}
               className="text-clay underline underline-offset-2"
             >
-              {BUSINESS.email}
+              {BUSINESS.contactEmail}
             </a>{" "}
             with the same details and your payment handle. We reply to confirm
             you&apos;re on the list, usually the same day. Your spot isn&apos;t held
@@ -53,8 +53,10 @@ export default function FaqPage() {
           </Q>
         ) : (
           <Q q="How do I sign up?">
-            Pick your event, choose how many spots, and pay by card. Your confirmation
-            email arrives immediately and that&apos;s your ticket.
+            Pick your event, choose how many spots, and pay by card right on the site.
+            Your confirmation email arrives immediately — it has your event details and
+            a door code (or one per spot, if you booked more than one). Show that code
+            at check-in; nothing to print, nothing to remember.
           </Q>
         )}
 
@@ -130,7 +132,14 @@ export default function FaqPage() {
 
         <Q q="Are you looking for venues?">
           Always. We bring the supplies, the instruction, and the promo — all we need
-          from a venue is tables, seating, and your normal service. Get in touch.
+          from a venue is tables, seating, and your normal service. Email{" "}
+          <a
+            href={`mailto:${BUSINESS.bookingEmail}`}
+            className="text-clay underline underline-offset-2"
+          >
+            {BUSINESS.bookingEmail}
+          </a>{" "}
+          and tell us about your space.
         </Q>
 
         <Q q="How do I reach you?">
@@ -145,10 +154,10 @@ export default function FaqPage() {
           </a>
           , email{" "}
           <a
-            href={`mailto:${BUSINESS.email}`}
+            href={`mailto:${BUSINESS.contactEmail}`}
             className="text-clay underline underline-offset-2"
           >
-            {BUSINESS.email}
+            {BUSINESS.contactEmail}
           </a>
           , or call/text{" "}
           <a href={BUSINESS.phoneHref} className="text-clay underline underline-offset-2">

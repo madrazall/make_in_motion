@@ -716,6 +716,223 @@ update events e
 
 
 -- ===========================================================================
+-- Per-seat ticket codes, so check-in doesn't depend on attendee names.
+--
+-- Orders already track a party (name, email, seats) as one unit, but that's
+-- the wrong granularity for the door: four people arrive separately, and
+-- nobody wants to maintain four names per order. Instead each *seat* gets its
+-- own single-use code, generated once the order is paid. A cheap USB/BT QR
+-- scanner (keyboard-wedge — it just types the decoded text + Enter) scans the
+-- code from the confirmation email; the door never needs a name at all.
+-- ===========================================================================
+
+create table tickets (
+  id             uuid primary key default gen_random_uuid(),
+  order_id       uuid not null references orders(id) on delete cascade,
+  seat_number    integer not null check (seat_number >= 1),
+  code           text not null unique,
+  checked_in_at  timestamptz,
+  created_at     timestamptz not null default now(),
+
+  unique (order_id, seat_number)
+);
+
+create index tickets_order_idx on tickets (order_id);
+
+comment on table tickets is
+  'One row per seat on a paid order. code is what the door scanner reads. '
+  'checked_in_at can only be set once — see check_in_ticket().';
+
+create or replace function generate_ticket_code() returns text
+language plpgsql as $$
+declare
+  alphabet constant text := '23456789ABCDEFGHJKMNPQRSTUVWXYZ';
+  candidate text;
+  i integer;
+begin
+  loop
+    candidate := '';
+    for i in 1..8 loop
+      candidate := candidate || substr(alphabet, 1 + floor(random() * length(alphabet))::int, 1);
+    end loop;
+    exit when not exists (select 1 from tickets where code = candidate);
+  end loop;
+  return candidate;
+end;
+$$;
+
+create or replace function create_tickets_for_order(p_order_id uuid)
+returns setof tickets
+language plpgsql as $$
+declare
+  v_order orders%rowtype;
+  i integer;
+begin
+  select * into v_order from orders where id = p_order_id;
+  if not found then
+    raise exception 'create_tickets_for_order: order % not found', p_order_id;
+  end if;
+
+  if exists (select 1 from tickets where order_id = p_order_id) then
+    return query select * from tickets where order_id = p_order_id order by seat_number;
+    return;
+  end if;
+
+  for i in 1..v_order.seats loop
+    insert into tickets (order_id, seat_number, code)
+    values (p_order_id, i, generate_ticket_code());
+  end loop;
+
+  return query select * from tickets where order_id = p_order_id order by seat_number;
+end;
+$$;
+
+create or replace function check_in_ticket(p_code text) returns jsonb
+language plpgsql as $$
+declare
+  v_ticket_id uuid;
+  v_ticket    tickets%rowtype;
+  v_order     orders%rowtype;
+  v_code      text := upper(trim(p_code));
+begin
+  select t.* into v_ticket from tickets t where t.code = v_code;
+
+  if not found then
+    return jsonb_build_object('ok', false, 'reason', 'not_found');
+  end if;
+
+  v_ticket_id := v_ticket.id;
+
+  select * into v_order from orders where id = v_ticket.order_id;
+
+  if v_order.status in ('refunded', 'cancelled') then
+    return jsonb_build_object(
+      'ok', false, 'reason', 'order_cancelled',
+      'guest_name', v_order.customer_name
+    );
+  end if;
+
+  update tickets
+     set checked_in_at = now()
+   where id = v_ticket_id
+     and checked_in_at is null
+  returning * into v_ticket;
+
+  if not found then
+    select t.* into v_ticket from tickets t where t.id = v_ticket_id;
+    return jsonb_build_object(
+      'ok', false, 'reason', 'already_used',
+      'guest_name', v_order.customer_name,
+      'seat_number', v_ticket.seat_number,
+      'seats_total', v_order.seats,
+      'checked_in_at', v_ticket.checked_in_at
+    );
+  end if;
+
+  return jsonb_build_object(
+    'ok', true,
+    'guest_name', v_order.customer_name,
+    'seat_number', v_ticket.seat_number,
+    'seats_total', v_order.seats,
+    'event_id', v_order.event_id
+  );
+end;
+$$;
+
+alter table tickets enable row level security;
+
+-- ===========================================================================
+-- Manual orders: door sales (cash/Venmo, sold in person) and the emergency
+-- fallback for whenever Stripe itself is down.
+--
+-- Same defense as reserve_seats() — a row lock on the event, a recount inside
+-- that lock. No hold/expiry (the admin is looking at the money right now) and
+-- no event_started check (a walk-up sale after doors open is normal).
+-- ===========================================================================
+
+alter table orders
+  add column payment_method text not null default 'stripe'
+    check (payment_method in ('stripe', 'cash', 'venmo', 'cashapp', 'comp', 'other'));
+
+comment on column orders.payment_method is
+  'How this order was actually paid. Stripe checkout always sets this by default; '
+  'manual/door sales set it explicitly so revenue can be reconciled by method.';
+
+create or replace function create_manual_order(
+  p_event_id       uuid,
+  p_seats          integer,
+  p_customer_name  text,
+  p_email          text,
+  p_phone          text,
+  p_amount_cents   integer,
+  p_payment_method text,
+  p_policy_version text,
+  p_notes          text default null
+) returns jsonb
+language plpgsql as $$
+declare
+  v_event       events%rowtype;
+  v_taken       integer;
+  v_spots_left  integer;
+  v_order_id    uuid;
+  v_code        text;
+begin
+  if p_seats is null or p_seats < 1 or p_seats > 8 then
+    return jsonb_build_object('ok', false, 'reason', 'invalid_quantity');
+  end if;
+
+  if p_amount_cents is null or p_amount_cents < 0 then
+    return jsonb_build_object('ok', false, 'reason', 'invalid_amount');
+  end if;
+
+  select * into v_event from events where id = p_event_id for update;
+
+  if not found then
+    return jsonb_build_object('ok', false, 'reason', 'event_not_found');
+  end if;
+
+  if v_event.status = 'cancelled' then
+    return jsonb_build_object('ok', false, 'reason', 'event_cancelled');
+  end if;
+
+  v_taken      := seats_taken(p_event_id);
+  v_spots_left := greatest(v_event.capacity - v_taken, 0);
+
+  if p_seats > v_spots_left then
+    return jsonb_build_object(
+      'ok', false,
+      'reason', case when v_spots_left = 0 then 'sold_out' else 'not_enough_spots' end,
+      'spots_left', v_spots_left
+    );
+  end if;
+
+  v_code := generate_confirmation_code();
+
+  insert into orders (
+    confirmation_code, event_id, customer_name, email, phone,
+    seats, amount_cents, status, paid_at,
+    policy_accepted_at, policy_version,
+    payment_method, notes
+  ) values (
+    v_code, p_event_id, p_customer_name,
+    lower(trim(coalesce(nullif(trim(p_email), ''), v_code || '@walkup.makeinmotion.com'))),
+    p_phone, p_seats, p_amount_cents, 'paid', now(),
+    now(), p_policy_version,
+    p_payment_method, p_notes
+  )
+  returning id into v_order_id;
+
+  return jsonb_build_object(
+    'ok', true,
+    'order_id', v_order_id,
+    'confirmation_code', v_code,
+    'spots_left', v_spots_left - p_seats,
+    'has_email', nullif(trim(p_email), '') is not null
+  );
+end;
+$$;
+
+-- ===========================================================================
 -- YOUR FIRST VENUE
 --
 -- Events need a venue. Add one here (edit the values), or skip this and add

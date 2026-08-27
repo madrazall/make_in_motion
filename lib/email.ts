@@ -21,7 +21,7 @@ function resend(): Resend {
   return cached;
 }
 
-const from = () => process.env.EMAIL_FROM ?? `${BUSINESS.name} <hello@${BUSINESS.domain}>`;
+const from = () => process.env.EMAIL_FROM ?? `${BUSINESS.name} <tickets@${BUSINESS.domain}>`;
 const replyTo = () => process.env.EMAIL_REPLY_TO ?? BUSINESS.email;
 
 // --------------------------------------------------------------------------
@@ -39,7 +39,7 @@ function shell(bodyHtml: string): string {
     <hr style="border:none;border-top:1px solid #e5ded4;margin:32px 0 16px;">
     <p style="font-size:12px;line-height:1.6;color:#7a7266;margin:0;">
       Questions? Reply to this email, or reach us at
-      <a href="mailto:${BUSINESS.email}" style="color:#c4643c;">${BUSINESS.email}</a>
+      <a href="mailto:${BUSINESS.contactEmail}" style="color:#c4643c;">${BUSINESS.contactEmail}</a>
       or <a href="${BUSINESS.phoneHref}" style="color:#c4643c;">${BUSINESS.phone}</a>.
     </p>
   </div>
@@ -313,6 +313,48 @@ export async function sendWaitlistOpeningEmail(params: {
     replyTo: replyTo(),
     subject: `A spot opened up — ${params.event.title}`,
     html,
+  });
+}
+
+// --------------------------------------------------------------------------
+// New event announcement — manual, admin-triggered. Never automatic.
+// --------------------------------------------------------------------------
+
+export async function sendNewEventAnnouncementEmail(params: {
+  to: string;
+  event: EventWithVenue;
+}): Promise<void> {
+  const { event } = params;
+  const unsubscribeUrl = `${siteUrl()}/api/unsubscribe?email=${encodeURIComponent(params.to)}`;
+
+  const html = shell(`
+    <h1 style="font-size:24px;margin:16px 0 4px;">A new night just went up.</h1>
+    <p style="font-size:16px;color:#4a4540;margin:0 0 20px;">
+      <strong>${event.title}</strong> — ${formatDate(event.starts_at)},
+      ${formatTimeRange(event.starts_at, event.ends_at)}<br>
+      ${event.venue.name}, ${event.venue.city}
+    </p>
+    <a href="${siteUrl()}/events/${event.slug}"
+       style="display:inline-block;background:#c4643c;color:#fff;text-decoration:none;
+              padding:12px 24px;border-radius:8px;font-weight:600;font-size:15px;">
+      Grab a spot
+    </a>
+    <p style="margin:24px 0 0;font-size:14px;line-height:1.7;color:#4a4540;">
+      These tend to sell out — first come, first served.
+    </p>
+  `);
+
+  await resend().emails.send({
+    from: from(),
+    to: params.to,
+    replyTo: replyTo(),
+    subject: `New event — ${event.title}, ${formatDate(event.starts_at)}`,
+    html: html.replace(
+      "</body></html>",
+      `<p style="font-size:11px;color:#9a9288;margin:20px 0 0;">
+         <a href="${unsubscribeUrl}" style="color:#9a9288;">Unsubscribe from event announcements</a>
+       </p></body></html>`
+    ),
   });
 }
 

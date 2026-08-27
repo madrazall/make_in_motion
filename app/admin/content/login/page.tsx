@@ -1,15 +1,15 @@
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import {
-  checkPassword,
+  checkContentPassword,
   createSessionToken,
   SESSION_COOKIE,
   sessionCookieOptions,
 } from "@/lib/auth";
 
-export const metadata = { title: "Admin", robots: { index: false } };
+export const metadata = { title: "Content calendar", robots: { index: false } };
 
-export default async function LoginPage({
+export default async function ContentLoginPage({
   searchParams,
 }: {
   searchParams: Promise<{ next?: string; error?: string }>;
@@ -19,15 +19,15 @@ export default async function LoginPage({
   async function login(formData: FormData) {
     "use server";
     const password = String(formData.get("password") ?? "");
-    const target = String(formData.get("next") ?? "/admin");
+    const target = String(formData.get("next") ?? "/admin/content");
 
-    if (!(await checkPassword(password))) {
-      redirect(`/admin/login?error=1&next=${encodeURIComponent(target)}`);
+    if (!(await checkContentPassword(password))) {
+      redirect(`/admin/content/login?error=1&next=${encodeURIComponent(target)}`);
     }
 
     (await cookies()).set(
       SESSION_COOKIE,
-      await createSessionToken("admin"),
+      await createSessionToken("content"),
       sessionCookieOptions
     );
     redirect(target);
@@ -35,9 +35,13 @@ export default async function LoginPage({
 
   return (
     <div className="mx-auto max-w-sm px-5 py-20">
-      <h1 className="text-2xl font-bold">Admin</h1>
+      <h1 className="text-2xl font-bold">Content calendar</h1>
+      <p className="mt-1.5 text-sm text-ink/60">
+        A separate sign-in, scoped to just the content calendar — nothing else
+        under admin is reachable from here.
+      </p>
       <form action={login} className="mt-6 space-y-4">
-        <input type="hidden" name="next" value={next ?? "/admin"} />
+        <input type="hidden" name="next" value={next ?? "/admin/content"} />
         <input
           name="password"
           type="password"

@@ -1,11 +1,16 @@
 import { requireEnv } from "./config";
 
 /**
- * Single-admin auth: one password, one HMAC-signed cookie.
+ * Two-role auth: one password for full admin, one separate password for the
+ * content calendar only. Still not a user system — no accounts, no per-person
+ * identity — just two shared passwords with different reach, so the content
+ * calendar can be handed off to someone else without giving them guest lists,
+ * revenue, or the ability to delete an event.
  *
- * Deliberately not a user system — there is exactly one person who logs in.
  * Uses Web Crypto so it runs unchanged on Cloudflare Workers.
  */
+
+export type Role = "admin" | "content";
 
 export const SESSION_COOKIE = "mim_admin";
 const SESSION_DAYS = 14;
@@ -40,30 +45,44 @@ function safeEqual(a: string, b: string): boolean {
   return diff === 0;
 }
 
-export async function createSessionToken(): Promise<string> {
+export async function createSessionToken(role: Role): Promise<string> {
   const expires = Date.now() + SESSION_DAYS * 24 * 60 * 60 * 1000;
-  const payload = String(expires);
+  // Colon inside the payload, dot between payload and signature — the two
+  // separators can't collide since neither role nor the timestamp contains one.
+  const payload = `${role}:${expires}`;
   return `${payload}.${await hmac(payload)}`;
 }
 
+/** Returns the authenticated role, or null if the token is missing/invalid/expired. */
 export async function verifySessionToken(
   token: string | undefined
-): Promise<boolean> {
-  if (!token) return false;
+): Promise<Role | null> {
+  if (!token) return null;
   const [payload, signature] = token.split(".");
-  if (!payload || !signature) return false;
+  if (!payload || !signature) return null;
 
   const expected = await hmac(payload);
-  if (!safeEqual(signature, expected)) return false;
+  if (!safeEqual(signature, expected)) return null;
 
-  return Number(payload) > Date.now();
+  const [role, expires] = payload.split(":");
+  if ((role !== "admin" && role !== "content") || !expires) return null;
+  if (Number(expires) <= Date.now()) return null;
+
+  return role;
 }
 
-export async function checkPassword(candidate: string): Promise<boolean> {
-  const expected = requireEnv("ADMIN_PASSWORD");
+async function checkAgainst(candidate: string, expected: string): Promise<boolean> {
   // Hash both sides so the comparison length doesn't leak the real length.
   const [a, b] = await Promise.all([hmac(candidate), hmac(expected)]);
   return safeEqual(a, b);
+}
+
+export async function checkPassword(candidate: string): Promise<boolean> {
+  return checkAgainst(candidate, requireEnv("ADMIN_PASSWORD"));
+}
+
+export async function checkContentPassword(candidate: string): Promise<boolean> {
+  return checkAgainst(candidate, requireEnv("CONTENT_PASSWORD"));
 }
 
 export const sessionCookieOptions = {

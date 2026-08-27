@@ -6,7 +6,7 @@ import { db } from "@/lib/db";
 import { DEFAULT_MIN_TO_RUN, TIMEZONE } from "@/lib/config";
 import { createManualOrder, getEventById, manualOrderErrorMessage } from "@/lib/availability";
 import { createTicketsForOrder } from "@/lib/tickets";
-import { sendConfirmationEmail } from "@/lib/email";
+import { sendConfirmationEmail, sendNewEventAnnouncementEmail } from "@/lib/email";
 import { CURRENT_POLICY_VERSION } from "@/lib/policy";
 import type { PaymentMethod } from "@/lib/types";
 
@@ -139,6 +139,37 @@ export async function createEvent(formData: FormData) {
   redirect(`/admin/events/${data.id}`);
 }
 
+export async function updateEvent(eventId: string, formData: FormData) {
+  const title = String(formData.get("title") ?? "").trim();
+  const startsLocal = String(formData.get("starts_at") ?? "");
+  const endsLocal = String(formData.get("ends_at") ?? "");
+  const workshopId = String(formData.get("workshop_id") ?? "").trim();
+
+  const record = {
+    title,
+    description: String(formData.get("description") ?? "").trim(),
+    venue_id: String(formData.get("venue_id") ?? ""),
+    workshop_id: workshopId || null,
+    starts_at: easternToUtcIso(startsLocal),
+    ends_at: easternToUtcIso(endsLocal),
+    capacity: Number(formData.get("capacity") ?? 20),
+    min_to_run: Number(formData.get("min_to_run") ?? DEFAULT_MIN_TO_RUN),
+    price_cents: Math.round(Number(formData.get("price") ?? 45) * 100),
+    whats_included: String(formData.get("whats_included") ?? "").trim(),
+    what_to_bring: String(formData.get("what_to_bring") ?? "").trim(),
+    venue_payout_note: String(formData.get("venue_payout_note") ?? "").trim() || null,
+    image_url: String(formData.get("image_url") ?? "").trim() || null,
+  };
+
+  const { error } = await db().from("events").update(record).eq("id", eventId);
+  if (error) throw new Error(error.message);
+
+  revalidatePath("/admin");
+  revalidatePath(`/admin/events/${eventId}`);
+  revalidatePath("/");
+  redirect(`/admin/events/${eventId}`);
+}
+
 /**
  * Duplicate an event onto a new date. This is why there's no recurring-event
  * engine — you run the same tutorial at different venues, and cloning covers
@@ -177,6 +208,30 @@ export async function cloneEvent(eventId: string) {
 
   revalidatePath("/admin");
   redirect(`/admin/events/${created.id}`);
+}
+
+/**
+ * For genuine mistakes — wrong venue, duplicate, wrong date entirely.
+ *
+ * Events with orders can't be deleted at the database level (orders.event_id
+ * is ON DELETE RESTRICT, deliberately — nothing should silently orphan a
+ * payment record). So this removes the event's orders first. Stripe still has
+ * the actual charge either way; what's lost is the ability to look that order
+ * up here. The confirmation prompt for that case lives client-side, right
+ * before this ever gets called — see DeleteEventButton.
+ *
+ * If you just want to stop selling an event that already has real signups,
+ * use "Cancel event" instead — it keeps every order on record.
+ */
+export async function deleteEvent(eventId: string) {
+  const { error: ordersError } = await db().from("orders").delete().eq("event_id", eventId);
+  if (ordersError) throw new Error(ordersError.message);
+
+  const { error } = await db().from("events").delete().eq("id", eventId);
+  if (error) throw new Error(error.message);
+
+  revalidatePath("/admin");
+  redirect("/admin");
 }
 
 export async function setEventStatus(eventId: string, status: string) {
@@ -256,6 +311,40 @@ export async function createManualOrderAction(eventId: string, formData: FormDat
   }
 
   revalidatePath(`/admin/events/${eventId}`);
+}
+
+/**
+ * Manual, admin-triggered only — deliberately not wired to setEventStatus.
+ * Click it when you actually want the list to hear about this event, not
+ * every time an event gets published or edited.
+ */
+export async function notifySubscribers(eventId: string) {
+  const event = await getEventById(eventId);
+  if (!event) throw new Error("Event not found.");
+
+  const [{ data: subscribers }, { data: alreadyNotified }] = await Promise.all([
+    db().from("subscribers").select("id, email"),
+    db().from("subscriber_notifications").select("subscriber_id").eq("event_id", eventId),
+  ]);
+
+  const notifiedIds = new Set((alreadyNotified ?? []).map((r) => r.subscriber_id));
+  const targets = (subscribers ?? []).filter((s) => !notifiedIds.has(s.id));
+
+  let sent = 0;
+  for (const sub of targets) {
+    try {
+      await sendNewEventAnnouncementEmail({ to: sub.email, event });
+      await db().from("subscriber_notifications").insert({ subscriber_id: sub.id, event_id: eventId });
+      sent++;
+    } catch (err) {
+      // One bad address shouldn't stop the rest of the list. Not marked as
+      // notified, so a retry (clicking the button again) will pick it back up.
+      console.error(`[notifySubscribers] failed for ${sub.email}`, err);
+    }
+  }
+
+  revalidatePath(`/admin/events/${eventId}`);
+  redirect(`/admin/events/${eventId}?notified=${sent}`);
 }
 
 export async function toggleCheckIn(orderId: string, checkedIn: boolean) {

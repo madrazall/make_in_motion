@@ -166,9 +166,28 @@ That's it. Secrets persist; you only set them once.
    the Stripe dashboard: `https://<your-url>/api/webhooks/stripe`
 2. **Email.** Needs `RESEND_API_KEY` **and** a verified sending domain. This is
    the one that needs makeinmotion.com — you can't send from Gmail.
-3. **Your domain.** Once you own it: Cloudflare dashboard → your Worker →
-   Settings → Domains & Routes → **Add custom domain**. Then change
-   `NEXT_PUBLIC_SITE_URL` in `wrangler.jsonc` and redeploy.
+3. **Your domain.** If you bought it through Cloudflare Registrar, DNS is
+   already on Cloudflare — skip to "Add custom domain" below. If you bought it
+   elsewhere (Ionos, GoDaddy, etc.), DNS has to move to Cloudflare first,
+   because Workers custom domains, Email Routing, and the Resend sending-domain
+   records all live in the same Cloudflare zone:
+
+   1. Cloudflare dashboard → **Add a site** → enter your domain → free plan.
+      Cloudflare hands you two nameservers.
+   2. At your registrar (Ionos, etc.) → domain settings → Nameservers →
+      replace the defaults with the two Cloudflare gave you. This only moves
+      DNS management — the domain itself stays registered where you bought it.
+   3. Wait for Cloudflare's activation email (usually under an hour).
+   4. **Add custom domain:** Cloudflare dashboard → your Worker → Settings →
+      Domains & Routes → **Add custom domain** → enter your domain.
+   5. Redeploy: `npm run deploy`. (`NEXT_PUBLIC_SITE_URL` in `wrangler.jsonc`
+      is already `https://makeinmotion.com` — no change needed unless the
+      domain differs.)
+   6. Verify the Resend sending domain (Resend dashboard → Domains → add
+      yours → paste the SPF/DKIM records it gives you into the Cloudflare
+      DNS tab for that zone) and turn on Cloudflare Email Routing (Email →
+      Email Routing → forward `hello@yourdomain` to your Gmail) — see
+      PLAN-v2.md §21 for why both of these matter.
 
 Do them in that order. Payments in test mode is the interesting one — you can
 run a fake purchase end to end and watch a real confirmation get written.

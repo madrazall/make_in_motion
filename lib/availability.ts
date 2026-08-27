@@ -18,7 +18,7 @@ import type {
  */
 
 const EVENT_SELECT = `
-  id, slug, title, description, image_url, venue_id,
+  id, slug, title, description, image_url, venue_id, workshop_id,
   starts_at, ends_at, capacity, min_to_run, price_cents,
   whats_included, what_to_bring, venue_payout_note, status,
   venue:venues (

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { createEvent } from "@/app/admin/actions";
 import { DEFAULT_MIN_TO_RUN } from "@/lib/config";
 import type { Workshop } from "@/lib/workshops";
+import type { EventRow } from "@/lib/types";
 
 /**
  * Create an event by picking a workshop and a date.
@@ -19,22 +20,27 @@ import type { Workshop } from "@/lib/workshops";
 export function EventForm({
   venues,
   workshops,
+  event,
+  action = createEvent,
 }: {
   venues: { id: string; name: string; city: string }[];
   workshops: Workshop[];
+  event?: EventRow;
+  action?: (formData: FormData) => Promise<void>;
 }) {
-  const [workshopId, setWorkshopId] = useState("");
+  const [workshopId, setWorkshopId] = useState(event?.workshop_id ?? "");
   const [form, setForm] = useState({
-    title: "",
-    description: "",
-    capacity: 20,
-    min_to_run: DEFAULT_MIN_TO_RUN,
-    price: 45,
-    whats_included: "Art supplies & setup. Instruction & facilitation.",
-    what_to_bring: "Just yourself.",
-    image_url: "",
-    starts_at: "",
-    ends_at: "",
+    title: event?.title ?? "",
+    description: event?.description ?? "",
+    capacity: event?.capacity ?? 20,
+    min_to_run: event?.min_to_run ?? DEFAULT_MIN_TO_RUN,
+    price: event ? event.price_cents / 100 : 45,
+    whats_included: event?.whats_included ?? "Art supplies & setup. Instruction & facilitation.",
+    what_to_bring: event?.what_to_bring ?? "Just yourself.",
+    image_url: event?.image_url ?? "",
+    starts_at: event ? toLocalDateTime(event.starts_at) : "",
+    ends_at: event ? toLocalDateTime(event.ends_at) : "",
+    venue_payout_note: event?.venue_payout_note ?? "",
   });
 
   const chosen = workshops.find((w) => w.id === workshopId);
@@ -72,7 +78,7 @@ export function EventForm({
   const noVenues = venues.length === 0;
 
   return (
-    <form action={createEvent} className="mt-6 space-y-5">
+    <form action={action} className="mt-6 space-y-5">
       <input type="hidden" name="workshop_id" value={workshopId} />
 
       {/* --------------------------------------------------------- workshop */}
@@ -110,7 +116,7 @@ export function EventForm({
         </div>
       ) : (
         <Field label="Venue">
-          <select name="venue_id" required className="field">
+            <select name="venue_id" required defaultValue={event?.venue_id} className="field">
             {venues.map((v) => (
               <option key={v.id} value={v.id}>
                 {v.name} — {v.city}
@@ -235,27 +241,45 @@ export function EventForm({
       <Field label="Venue arrangement" hint="private, just for you">
         <input
           name="venue_payout_note"
+          value={form.venue_payout_note}
+          onChange={(e) => setForm({ ...form, venue_payout_note: e.target.value })}
           placeholder="e.g. no room fee, they keep bar sales"
           className="field"
         />
       </Field>
 
-      <label className="flex items-center gap-2.5">
-        <input type="checkbox" name="publish" className="h-4 w-4 accent-clay" />
-        <span className="text-sm font-semibold">
-          Publish immediately — puts it on the public calendar
-        </span>
-      </label>
+      {!event && (
+        <label className="flex items-center gap-2.5">
+          <input type="checkbox" name="publish" className="h-4 w-4 accent-clay" />
+          <span className="text-sm font-semibold">
+            Publish immediately — puts it on the public calendar
+          </span>
+        </label>
+      )}
 
       <button
         disabled={noVenues}
         className="rounded-lg bg-sage px-6 py-3 font-bold uppercase tracking-wide text-paper
                    shadow-neon-cyan transition-all hover:bg-sage/85 disabled:opacity-30"
       >
-        Create event
+        {event ? "Save changes" : "Create event"}
       </button>
     </form>
   );
+}
+
+function toLocalDateTime(iso: string): string {
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/New_York",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  }).formatToParts(new Date(iso));
+  const values = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+  return `${values.year}-${values.month}-${values.day}T${values.hour}:${values.minute}`;
 }
 
 /** "2026-09-14T19:00" + 120 → "2026-09-14T21:00" */

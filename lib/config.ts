@@ -5,10 +5,32 @@
 export const BUSINESS = {
   name: "Make In Motion",
   email: "makeinmotionct@gmail.com",
+  // Purpose-built addresses on the domain, each routed via Cloudflare Email
+  // Routing. `email` above (the Gmail) stays as the account everything still
+  // forwards to — these are what customers and venues actually see.
+  contactEmail: "hey@makeinmotion.com",
+  bookingEmail: "booking@makeinmotion.com",
+  ticketsEmail: "tickets@makeinmotion.com",
   phone: "860-348-7466",
   phoneHref: "tel:+18603487466",
   domain: "makeinmotion.com",
 } as const;
+
+/** Google Analytics (GA4) measurement ID. One place to change it. */
+export const GA_MEASUREMENT_ID = "G-MC8RS94L78";
+
+/** Content calendar platforms. Add one here and every form/filter picks it up. */
+export const CONTENT_PLATFORMS = [
+  { value: "instagram", label: "Instagram" },
+  { value: "email", label: "Email" },
+] as const;
+
+export const CONTENT_STATUSES = [
+  { value: "idea", label: "Idea" },
+  { value: "drafted", label: "Drafted" },
+  { value: "scheduled", label: "Scheduled" },
+  { value: "posted", label: "Posted" },
+] as const;
 
 /** Homepage "about" section and venue-pitch copy. One place to change it. */
 export const ABOUT_TEXT = [
@@ -55,7 +77,7 @@ export const PAYMENT_MODE: "manual" | "stripe" =
  * Note: use a Venmo BUSINESS profile. Venmo prohibits business transactions on
  * personal accounts and enforces it by freezing the balance.
  */
-export const HANDLE = "makeinmotionct";
+export const HANDLE = "make_in_motion";
 
 /** Override individually only if one platform ever differs. */
 export const PAYMENT_HANDLES = {

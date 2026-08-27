@@ -82,6 +82,12 @@ export default async function AdminDashboard() {
           <Link href="/admin/venues" className="text-clay hover:underline">
             Venues
           </Link>
+          <Link href="/admin/content" className="text-clay hover:underline">
+            Content
+          </Link>
+          <Link href="/admin/subscribers" className="text-clay hover:underline">
+            Subscribers
+          </Link>
           <Link href="/admin/inquiries" className="text-clay hover:underline">
             Inquiries{inquiries?.length ? ` (${inquiries.length})` : ""}
           </Link>
@@ -92,6 +98,15 @@ export default async function AdminDashboard() {
             New event
           </Link>
         </div>
+      </div>
+
+      <div className="mt-4 rounded-xl border border-white/10 bg-white/[0.03] p-4 text-sm text-ink/70">
+        <strong className="text-ink">Adding an event, in short:</strong> click{" "}
+        <strong>New event</strong> above → pick a workshop from the catalogue (fills
+        in title, price, and details for you) → pick a venue (add one first if it's
+        not listed yet) → set the start time → check &quot;Publish immediately&quot;
+        if it's ready to go live, or leave it unchecked to save as a draft you can
+        publish later.
       </div>
 
       {/* T-3 day go/no-go. Flags only — never auto-cancels. */}

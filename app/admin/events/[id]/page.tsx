@@ -10,9 +10,12 @@ import {
   renameGuest,
   toggleCheckIn,
   createManualOrderAction,
+  notifySubscribers,
+  deleteEvent,
 } from "../../actions";
 import { formatDate, formatTimeRange, formatMoney, relativeDays } from "@/lib/format";
 import { MAX_SEATS_PER_ORDER } from "@/lib/config";
+import { DeleteEventButton } from "@/components/admin/DeleteEventButton";
 import type { OrderRow } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
@@ -20,25 +23,33 @@ export const metadata = { robots: { index: false } };
 
 export default async function AdminEventPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ notified?: string }>;
 }) {
   const { id } = await params;
+  const { notified } = await searchParams;
   const event = await getEventById(id);
   if (!event) notFound();
 
-  const [{ data: orderData }, { data: waitlistData }] = isDemoMode()
-    ? [{ data: DEMO_ORDERS }, { data: DEMO_WAITLIST }]
-    : await Promise.all([
-        db()
-          .from("orders")
-          .select("*")
-          .eq("event_id", id)
-          .in("status", ["paid", "partially_refunded"])
-          .order("created_at", { ascending: true }),
-        db().from("waitlist").select("*").eq("event_id", id).order("created_at"),
-      ]);
+  const [{ data: orderData }, { data: waitlistData }, { count: subscriberCount }, { data: alreadyNotified }] =
+    isDemoMode()
+      ? [{ data: DEMO_ORDERS }, { data: DEMO_WAITLIST }, { count: 0 }, { data: [] }]
+      : await Promise.all([
+          db()
+            .from("orders")
+            .select("*")
+            .eq("event_id", id)
+            .in("status", ["paid", "partially_refunded"])
+            .order("created_at", { ascending: true }),
+          db().from("waitlist").select("*").eq("event_id", id).order("created_at"),
+          db().from("subscribers").select("id", { count: "exact", head: true }),
+          db().from("subscriber_notifications").select("subscriber_id").eq("event_id", id),
+        ]);
 
+  const notifiedCount = alreadyNotified?.length ?? 0;
+  const notifiableCount = Math.max((subscriberCount ?? 0) - notifiedCount, 0);
   const orders = (orderData ?? []) as OrderRow[];
   const checkInCounts = isDemoMode()
     ? new Map<string, { total: number; checkedIn: number }>()
@@ -72,6 +83,12 @@ export default async function AdminEventPage({
           >
             Download roster CSV
           </a>
+          <Link
+            href={`/admin/events/${event.id}/edit`}
+            className="rounded-lg border border-white/15 px-3 py-2 text-sm font-semibold"
+          >
+            Edit event
+          </Link>
           <form action={cloneEvent.bind(null, event.id)}>
             <button className="rounded-lg border border-white/15 px-3 py-2 text-sm font-semibold">
               Clone to next week
@@ -91,8 +108,22 @@ export default async function AdminEventPage({
               </button>
             </form>
           )}
+          {event.status === "published" && notifiableCount > 0 && (
+            <form action={notifySubscribers.bind(null, event.id)}>
+              <button className="rounded-lg border border-white/15 px-3 py-2 text-sm font-semibold">
+                Notify {notifiableCount} subscriber{notifiableCount === 1 ? "" : "s"}
+              </button>
+            </form>
+          )}
+          <DeleteEventButton action={deleteEvent.bind(null, event.id)} headcount={headcount} />
         </div>
       </div>
+
+      {notified !== undefined && (
+        <div className="mt-4 rounded-xl border border-sage/30 bg-sage/10 p-3 text-sm text-sage">
+          Emailed {notified} subscriber{notified === "1" ? "" : "s"} about this event.
+        </div>
+      )}
 
       <div className="mt-6 grid gap-4 sm:grid-cols-4">
         <Stat label="Headcount" value={`${headcount} / ${event.capacity}`} alert={belowMinimum} />

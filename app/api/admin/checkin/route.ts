@@ -11,7 +11,7 @@ export const runtime = "nodejs";
 export async function POST(req: NextRequest) {
   // The middleware matcher only covers /admin/*, so this route checks its own auth.
   const token = req.cookies.get(SESSION_COOKIE)?.value;
-  if (!(await verifySessionToken(token))) {
+  if ((await verifySessionToken(token)) !== "admin") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

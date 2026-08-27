@@ -14,7 +14,7 @@ export function SubscribeForm({ source = "homepage" }: { source?: string }) {
   if (done) {
     return (
       <p className="text-sm font-medium text-sage">
-        Got it — we'll let you know when the next one goes up.
+        Got it — we'll keep you posted.
       </p>
     );
   }
@@ -50,6 +50,10 @@ export function SubscribeForm({ source = "homepage" }: { source?: string }) {
       >
         {busy ? "…" : "Notify me"}
       </button>
+      <p className="w-full text-xs leading-relaxed text-ink/45 sm:mt-1">
+        Occasional emails about new events and things going on — no spam,
+        unsubscribe anytime.
+      </p>
     </form>
   );
 }
