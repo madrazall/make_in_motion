@@ -19,15 +19,20 @@ set ticket_number = 'MIM-TKT-' || lpad(numbered.n::text, 6, '0')
 from numbered
 where t.id = numbered.id;
 
+-- If tickets already exist, move the sequence past the highest assigned number.
+-- setval(..., 1, false) is safe even when there are no tickets.
 select setval(
   'ticket_number_seq',
-  coalesce(
-    (select max(substring(ticket_number from '[0-9]+$')::bigint)
-     from tickets
-     where ticket_number ~ '[0-9]+$'),
-    0
+  greatest(
+    coalesce(
+      (select max(substring(ticket_number from '[0-9]+$')::bigint)
+       from tickets
+       where ticket_number ~ '[0-9]+$'),
+      1
+    ),
+    1
   ),
-  true
+  (select exists(select 1 from tickets where ticket_number is not null))
 );
 
 alter table tickets
