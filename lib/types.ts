@@ -118,6 +118,7 @@ export type ManualOrderResult =
 export interface TicketRow {
   id: string;
   order_id: string;
+  ticket_number: string;
   seat_number: number;
   code: string;
   checked_in_at: string | null;

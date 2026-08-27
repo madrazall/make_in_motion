@@ -745,9 +745,12 @@ update events e
 -- code from the confirmation email; the door never needs a name at all.
 -- ===========================================================================
 
+create sequence if not exists ticket_number_seq;
+
 create table tickets (
   id             uuid primary key default gen_random_uuid(),
   order_id       uuid not null references orders(id) on delete cascade,
+  ticket_number  text not null default ('MIM-TKT-' || lpad(nextval('ticket_number_seq')::text, 6, '0')),
   seat_number    integer not null check (seat_number >= 1),
   code           text not null unique,
   checked_in_at  timestamptz,
@@ -757,6 +760,7 @@ create table tickets (
 );
 
 create index tickets_order_idx on tickets (order_id);
+create unique index tickets_ticket_number_uidx on tickets (ticket_number);
 
 comment on table tickets is
   'One row per seat on a paid order. code is what the door scanner reads. '
