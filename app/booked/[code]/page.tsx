@@ -4,7 +4,7 @@ import { isDemoMode, DEMO_ORDER } from "@/lib/demo";
 import { getEventById } from "@/lib/availability";
 import { formatDate, formatTimeRange, formatMoney } from "@/lib/format";
 import { BUSINESS } from "@/lib/config";
-import type { OrderRow } from "@/lib/types";
+import type { OrderRow, TicketRow } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Your booking", robots: { index: false } };
@@ -31,6 +31,17 @@ export default async function BookedPage({
 
   const event = await getEventById(order.event_id);
   if (!event) notFound();
+
+  const tickets = isDemoMode()
+    ? []
+    : ((await db()
+        .from("tickets")
+        .select("ticket_number, seat_number, code, checked_in_at")
+        .eq("order_id", order.id)
+        .order("seat_number")).data ?? []) as Pick<
+          TicketRow,
+          "ticket_number" | "seat_number" | "code" | "checked_in_at"
+        >[];
 
   /**
    * The webhook may not have landed yet — Stripe usually fires within a second
@@ -61,6 +72,33 @@ export default async function BookedPage({
             your confirmation to {order.email}.
           </p>
         </>
+      )}
+
+      {!pending && tickets.length > 0 && (
+        <div className="mt-8 rounded-2xl border border-white/10 bg-surface/80 p-6">
+          <h2 className="font-bold">Your tickets</h2>
+          <p className="mt-1 text-sm text-ink/60">
+            Each ticket has its own number and one-time check-in code.
+          </p>
+          <div className="mt-4 space-y-3">
+            {tickets.map((ticket) => (
+              <div key={ticket.ticket_number} className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
+                <div className="flex items-center justify-between gap-4">
+                  <span className="text-sm text-ink/55">Ticket</span>
+                  <span className="font-mono font-semibold">{ticket.ticket_number}</span>
+                </div>
+                <div className="mt-2 flex items-center justify-between gap-4">
+                  <span className="text-sm text-ink/55">Seat</span>
+                  <span className="font-semibold">{ticket.seat_number}</span>
+                </div>
+                <div className="mt-2 flex items-center justify-between gap-4">
+                  <span className="text-sm text-ink/55">Check-in code</span>
+                  <span className="font-mono font-semibold tracking-wide">{ticket.code}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       )}
 
       <div className="mt-8 rounded-2xl border border-white/10 bg-surface/80 p-6">
