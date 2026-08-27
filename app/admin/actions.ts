@@ -262,19 +262,23 @@ export async function createManualOrderAction(eventId: string, formData: FormDat
   const amountCents = Math.round(Number(formData.get("amount") ?? 0) * 100);
   const paymentMethod = String(formData.get("payment_method") ?? "cash") as PaymentMethod;
   const customerName = String(formData.get("customer_name") ?? "").trim();
-  const email = String(formData.get("email") ?? "").trim();
+  const email = String(formData.get("email") ?? "").trim().toLowerCase();
   const phone = String(formData.get("phone") ?? "").trim();
   const notes = String(formData.get("notes") ?? "").trim();
   const checkInNow = formData.get("check_in_now") === "on";
 
   if (!customerName) throw new Error("Name is required.");
+  if (!email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+    throw new Error("A valid email is required.");
+  }
+  if (phone.length < 7) throw new Error("A valid phone number is required.");
 
   const result = await createManualOrder({
     eventId,
     seats,
     customerName,
-    email: email || null,
-    phone: phone || null,
+    email,
+    phone,
     amountCents,
     paymentMethod,
     policyVersion: CURRENT_POLICY_VERSION,

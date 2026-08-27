@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
 import { isDemoMode, DEMO_ORDERS, DEMO_WAITLIST } from "@/lib/demo";
 import { getEventById } from "@/lib/availability";
-import { getCheckInCountsByOrder } from "@/lib/tickets";
+import { getCheckInCountsByOrder, getTicketsForOrder } from "@/lib/tickets";
 import {
   cloneEvent,
   setEventStatus,
@@ -16,7 +16,7 @@ import {
 import { formatDate, formatTimeRange, formatMoney, relativeDays } from "@/lib/format";
 import { MAX_SEATS_PER_ORDER } from "@/lib/config";
 import { DeleteEventButton } from "@/components/admin/DeleteEventButton";
-import type { OrderRow } from "@/lib/types";
+import type { OrderRow, TicketRow } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 export const metadata = { robots: { index: false } };
@@ -51,6 +51,13 @@ export default async function AdminEventPage({
   const notifiedCount = alreadyNotified?.length ?? 0;
   const notifiableCount = Math.max((subscriberCount ?? 0) - notifiedCount, 0);
   const orders = (orderData ?? []) as OrderRow[];
+  const ticketsByOrder: Map<string, TicketRow[]> = isDemoMode()
+    ? new Map<string, TicketRow[]>()
+    : new Map(
+        await Promise.all(
+          orders.map(async (order) => [order.id, await getTicketsForOrder(order.id)] as const)
+        )
+      );
   const checkInCounts = isDemoMode()
     ? new Map<string, { total: number; checkedIn: number }>()
     : await getCheckInCountsByOrder(orders.map((o) => o.id));
@@ -151,8 +158,8 @@ export default async function AdminEventPage({
         </p>
         <form action={createManualOrderAction.bind(null, event.id)} className="mt-3 grid gap-3 sm:grid-cols-2">
           <input name="customer_name" required placeholder="Name" className="field" />
-          <input name="email" type="email" placeholder="Email (optional)" className="field" />
-          <input name="phone" placeholder="Phone (optional)" className="field" />
+          <input name="email" type="email" required placeholder="Email" className="field" />
+          <input name="phone" type="tel" required placeholder="Phone" className="field" />
           <select name="seats" defaultValue="1" className="field">
             {Array.from({ length: Math.min(event.spotsLeft || 1, MAX_SEATS_PER_ORDER) }, (_, i) => i + 1).map(
               (n) => (
@@ -208,7 +215,7 @@ export default async function AdminEventPage({
             <th className="pb-2 font-semibold">Name</th>
             <th className="pb-2 font-semibold">Contact</th>
             <th className="pb-2 font-semibold">Spots</th>
-            <th className="pb-2 font-semibold">Code</th>
+            <th className="pb-2 font-semibold">Confirmation / tickets</th>
             <th className="pb-2 font-semibold">In</th>
           </tr>
         </thead>
@@ -231,6 +238,7 @@ export default async function AdminEventPage({
               <td className="py-2.5 text-ink/70">
                 <div>{o.email}</div>
                 {o.phone && <div className="text-xs">{o.phone}</div>}
+                {o.phone && <div>{o.phone}</div>}
                 {o.payment_method !== "stripe" && (
                   <span className="mt-1 inline-block rounded-full bg-clay/15 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-clay">
                     {o.payment_method}
@@ -238,7 +246,14 @@ export default async function AdminEventPage({
                 )}
               </td>
               <td className="py-2.5 font-semibold">{o.seats}</td>
-              <td className="py-2.5 font-mono text-xs">{o.confirmation_code}</td>
+              <td className="py-2.5 font-mono text-xs">
+                <div>{o.confirmation_code}</div>
+                {(ticketsByOrder.get(o.id) ?? []).map((ticket) => (
+                  <div key={ticket.id} className="mt-1 text-ink/60">
+                    Ticket {ticket.seat_number}: {ticket.code}
+                  </div>
+                ))}
+              </td>
               <td className="py-2.5">
                 <div className="flex items-center gap-2">
                   <form action={toggleCheckIn.bind(null, o.id, !o.checked_in_at)}>

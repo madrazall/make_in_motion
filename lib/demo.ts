@@ -225,6 +225,7 @@ export const DEMO_ORDER = DEMO_ORDERS[0];
  * neon placeholder, so a half-photographed catalog still looks deliberate.
  */
 export const WORKSHOP_PHOTOS: Record<string, string> = {
+  "mini-terrariums": "/images/terrarium.jpg",
   "canvas-collab-night": "/images/paint-and-sip.jpg",
   "classic-canvas": "/images/paint-and-sip.jpg",
   "jewelry-bar": "/images/jewelry-bar.jpg",
@@ -246,6 +247,7 @@ export const WORKSHOP_PHOTOS: Record<string, string> = {
  * shortened descriptions, since the menu page only shows the tagline.
  */
 export const DEMO_WORKSHOPS = [
+  ["mini-terrariums", "Build Your Own Mini Terrarium", "Build a tiny living world to take home.", "A finished mini terrarium with care instructions", ["Date night", "Beginner-friendly", "Girls' night", "Solo creative reset"], 120, 3700, 1, 24, true],
   ["canvas-collab-night", "Canvas Collab Night", "Everyone paints everyone else's canvas.", "A collaborative canvas nobody could have made alone", ["Girls' night", "Team building", "Date night", "Beginner-friendly"], 120, 4500, 6, 24, true],
   ["classic-canvas", "Classic Canvas", "One painting, step by step, at your own pace.", "A finished 11x14 canvas to take home", ["Date night", "Girls' night", "Birthday", "Beginner-friendly"], 120, 4500, 6, 30, true],
   ["ink-tiles", "Ink Tiles", "Alcohol ink on ceramic. Impossible to do badly.", "Two finished ceramic tiles, sealed and ready to display", ["Beginner-friendly", "Date night", "Team building", "Girls' night"], 90, 4000, 6, 28, true],

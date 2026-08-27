@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
   const seats = Number(body.seats);
   const name = (body.name ?? "").trim();
   const email = (body.email ?? "").trim().toLowerCase();
-  const phone = (body.phone ?? "").trim() || null;
+  const phone = (body.phone ?? "").trim();
 
   // ---- validation ---------------------------------------------------------
   if (!body.eventId) {
@@ -52,6 +52,12 @@ export async function POST(req: NextRequest) {
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
     return NextResponse.json(
       { error: "Please enter a valid email address — this is where your ticket goes." },
+      { status: 400 }
+    );
+  }
+  if (phone.length < 7) {
+    return NextResponse.json(
+      { error: "Please enter a phone number so we can reach you about your booking." },
       { status: 400 }
     );
   }

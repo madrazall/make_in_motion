@@ -28,7 +28,7 @@ export function SeatPicker({
   const [submitting, setSubmitting] = useState(false);
 
   const total = priceCents * seats;
-  const canSubmit = accepted && !submitting && name.trim() && email.trim();
+  const canSubmit = accepted && !submitting && name.trim() && email.trim() && phone.trim();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -127,13 +127,14 @@ export function SeatPicker({
 
       <div>
         <label htmlFor="phone" className="block text-sm font-semibold mb-1.5">
-          Phone <span className="font-normal text-ink/50">(optional)</span>
+          Phone
         </label>
         <input
           id="phone"
           type="tel"
           autoComplete="tel"
           inputMode="tel"
+          required
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
           className={inputClass}

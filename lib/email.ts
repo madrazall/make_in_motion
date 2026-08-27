@@ -101,7 +101,7 @@ function ticketsHtml(tickets: TicketRow[], qrUrls: Map<string, string>): string 
       return `<div style="display:inline-block;text-align:center;padding:12px;margin:4px;background:#fff;border:1px solid #e5ded4;border-radius:12px;">
         ${img}
         <div style="margin-top:6px;font-size:11px;color:#7a7266;">Seat ${t.seat_number} of ${tickets.length}</div>
-        <div style="font-family:ui-monospace,monospace;font-size:13px;font-weight:600;letter-spacing:.03em;">${t.code}</div>
+        <div style="font-family:ui-monospace,monospace;font-size:13px;font-weight:600;letter-spacing:.03em;">Ticket number: ${t.code}</div>
       </div>`;
     })
     .join("");

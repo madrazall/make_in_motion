@@ -45,6 +45,8 @@ export function ManualBooking({
     `Spots: ${seats}`,
     ``,
     `Name: `,
+    `Email: `,
+    `Phone: `,
     `Venmo / CashApp handle: `,
     `Amount sent: ${formatMoney(total)}`,
     ``,
