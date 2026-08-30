@@ -34,7 +34,7 @@ export const CONTENT_STATUSES = [
 
 /** Homepage "about" section and venue-pitch copy. One place to change it. */
 export const ABOUT_TEXT = [
-  "Make in Motion is a pop-up creative workshop experience built around one simple idea: making things is more fun when you actually get to make them.",
+  "Make in Motion is a pop-up creative workshop experience built on a simple idea: taste is taste. Somebody out there loves olives — and somebody's going to love the thing you almost threw out.",
   "We bring hands-on, guided creative projects to breweries, community spaces, private events, and other unexpected places. Each workshop is designed around a specific project, with the materials, instructions, and creative direction provided, so guests can show up, get comfortable, and start creating without needing an art degree or a perfectly organized craft room.",
   "From painting and mixed-media projects to jewelry, textiles, terrariums, and whatever comes next, Make in Motion is about getting people out of their heads and into the process. Pick a project. Grab some supplies. Make something.",
 ] as const;
