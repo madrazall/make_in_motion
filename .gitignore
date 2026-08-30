@@ -22,6 +22,10 @@ next-env.d.ts
 # Generated UI snapshot — ~28MB, rebuilt on demand. Not source.
 ui-preview/
 
+# Flyers and social crops, exported per event. Regenerated from the event
+# photo when needed — large binaries that git can't diff. Keep them locally.
+marketing/
+
 # Original uncompressed photos. Keep them somewhere backed up, but they don't
 # belong in the repo — the optimised versions in public/images/ are what ship.
 *.psd
