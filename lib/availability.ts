@@ -234,18 +234,23 @@ export async function expireHolds(): Promise<number> {
   return (data as number) ?? 0;
 }
 
-/** Human-readable availability for a badge. */
+/**
+ * Human-readable availability for a badge.
+ *
+ * Deliberately no exact counts. A public "13 spots left" publishes how a given
+ * date is selling, and on a quiet one it reads as a reason to wait rather than
+ * book. Nearly-full still gets a nudge, sold-out still has to be obvious so
+ * nobody clicks into a dead checkout — everything in between says nothing.
+ *
+ * Returns null when there is no badge to show.
+ */
 export function availabilityLabel(event: {
   spotsLeft: number;
   capacity: number;
-}): { text: string; tone: "ok" | "low" | "gone" } {
+}): { text: string; tone: "low" | "gone" } | null {
   if (event.spotsLeft <= 0) return { text: "Sold out", tone: "gone" };
-  if (event.spotsLeft <= 3)
-    return {
-      text: `Only ${event.spotsLeft} spot${event.spotsLeft === 1 ? "" : "s"} left`,
-      tone: "low",
-    };
-  return { text: `${event.spotsLeft} spots left`, tone: "ok" };
+  if (event.spotsLeft <= 3) return { text: "Almost full", tone: "low" };
+  return null;
 }
 
 /** Copy for a rejected reservation. Shown to a real person, so no jargon. */

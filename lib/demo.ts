@@ -98,7 +98,7 @@ export const DEMO_EVENTS: EventWithAvailability[] = [
     starts_at: daysOut(2, 19),
     ends_at: daysOut(2, 21),
   }),
-  // Nearly gone — shows the orange "Only 2 spots left" badge.
+  // Nearly gone — shows the orange "Almost full" badge.
   makeEvent({
     id: "demo-2",
     slug: "canvas-collab-night-chester",

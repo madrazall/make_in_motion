@@ -30,9 +30,11 @@ export function EventCard({ event }: { event: EventWithAvailability }) {
           {event.venue.name}, {event.venue.city}
         </p>
 
-        <div className="mt-3">
-          <AvailabilityBadge spotsLeft={event.spotsLeft} capacity={event.capacity} />
-        </div>
+        <AvailabilityBadge
+          spotsLeft={event.spotsLeft}
+          capacity={event.capacity}
+          className="mt-3"
+        />
       </div>
     </Link>
   );
