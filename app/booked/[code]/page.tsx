@@ -4,6 +4,7 @@ import { isDemoMode, DEMO_ORDER } from "@/lib/demo";
 import { getEventById } from "@/lib/availability";
 import { formatDate, formatTimeRange, formatMoney } from "@/lib/format";
 import { BUSINESS } from "@/lib/config";
+import { PurchaseEvent } from "@/components/PurchaseEvent";
 import type { OrderRow, TicketRow } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
@@ -53,6 +54,17 @@ export default async function BookedPage({
 
   return (
     <div className="mx-auto max-w-xl px-5 py-14">
+      {/* Only a settled order is a purchase — a pending one may still fail. */}
+      {!pending && (
+        <PurchaseEvent
+          transactionId={order.confirmation_code}
+          value={order.amount_cents / 100}
+          itemId={event.id}
+          itemName={event.title}
+          quantity={order.seats}
+        />
+      )}
+
       {pending ? (
         <>
           <h1 className="text-3xl font-bold">Just a moment…</h1>
@@ -140,7 +152,7 @@ export default async function BookedPage({
           <li>
             <strong>21+ only</strong> — please bring valid ID.
           </li>
-          <li>Wear something you don't mind getting paint on.</li>
+          <li>Wear something you don't mind getting messy — depending on the project that's paint, dye, ink, wax or soil.</li>
           <li>
             We start on time so everyone finishes together. More than 15 minutes late
             and we may not be able to catch you up.
@@ -152,8 +164,8 @@ export default async function BookedPage({
       <div className="mt-7 rounded-xl bg-white/[0.04] p-5 text-[15px] leading-relaxed">
         <p className="font-bold">Can't make it?</p>
         <p className="mt-1 text-ink/80">
-          Transfer your ticket to a friend any time before the event starts — just email
-          or text us the new name. No fee. See the{" "}
+          Transfer your ticket to a friend any time before the event starts — just send
+          them the ticket. No fee, and nothing you need to tell us. See the{" "}
           <a href="/faq#refunds" className="text-clay underline underline-offset-2">
             full refund policy
           </a>
