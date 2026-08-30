@@ -109,7 +109,7 @@ export const POLICY_TEXT = {
     {
       heading: "Transfers",
       body: [
-        "Can't make it? You may transfer your ticket to a friend at any time before the event starts. Just email or text us the new name so we can update the guest list — no fee.",
+        "Can't make it? You may transfer your ticket to a friend at any time before the event starts. Just send them the ticket — whoever brings it gets in. No fee, and nothing you need to tell us.",
       ],
     },
     {

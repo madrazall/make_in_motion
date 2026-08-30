@@ -2,9 +2,9 @@ import { db } from "./db";
 import type { CheckInResult, TicketRow } from "./types";
 
 /**
- * Per-seat check-in codes. See supabase/migrations/0006_tickets.sql for why
- * this exists instead of per-seat names: nobody wants to maintain four names
- * per order, but four people still arrive separately.
+ * Per-seat check-in codes. Tickets are bearer instruments: no names anywhere.
+ * Whoever holds the code gets that seat, which is why transfers need no
+ * paperwork and four people from one order can arrive separately.
  */
 
 /** Mints one ticket per seat on a paid order. Safe to call more than once. */
