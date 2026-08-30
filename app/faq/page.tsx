@@ -61,8 +61,9 @@ export default function FaqPage() {
         )}
 
         <Q q="What should I wear?">
-          Something you don't mind getting paint on. We use washable acrylics and we
-          bring aprons, but accidents are part of the deal.
+          Something you don't mind getting messy. Depending on the project that's paint,
+          dye, ink, wax or soil — and dye in particular does not come out. We bring aprons
+          and use washable acrylics where we can, but accidents are part of the deal.
         </Q>
 
         <Q q="Is there an age limit?">
