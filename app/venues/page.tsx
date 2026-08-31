@@ -161,10 +161,10 @@ export default async function VenuesPage() {
         </a>{" "}
         ·{" "}
         <a
-          href={`mailto:${BUSINESS.email}`}
+          href={`mailto:${BUSINESS.contactEmail}`}
           className="text-clay underline underline-offset-2"
         >
-          {BUSINESS.email}
+          {BUSINESS.contactEmail}
         </a>{" "}
         ·{" "}
         <a href={BUSINESS.phoneHref} className="text-clay underline underline-offset-2">

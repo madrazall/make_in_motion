@@ -50,7 +50,7 @@ export function buildEventIcs(params: {
     "21+ — please bring valid ID.",
     "Wear something you don't mind getting messy.",
     "",
-    `Questions: ${BUSINESS.email} or ${BUSINESS.phone}`,
+    `Questions: ${BUSINESS.contactEmail} or ${BUSINESS.phone}`,
   ].join("\n");
 
   const lines = [

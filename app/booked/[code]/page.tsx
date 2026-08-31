@@ -172,8 +172,8 @@ export default async function BookedPage({
           .
         </p>
         <p className="mt-3 text-ink/80">
-          <a href={`mailto:${BUSINESS.email}`} className="text-clay underline underline-offset-2">
-            {BUSINESS.email}
+          <a href={`mailto:${BUSINESS.contactEmail}`} className="text-clay underline underline-offset-2">
+            {BUSINESS.contactEmail}
           </a>{" "}
           ·{" "}
           <a href={BUSINESS.phoneHref} className="text-clay underline underline-offset-2">

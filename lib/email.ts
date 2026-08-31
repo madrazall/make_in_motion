@@ -21,7 +21,7 @@ function resend(): Resend {
 }
 
 const from = () => process.env.EMAIL_FROM ?? `${BUSINESS.name} <tickets@${BUSINESS.domain}>`;
-const replyTo = () => process.env.EMAIL_REPLY_TO ?? BUSINESS.email;
+const replyTo = () => process.env.EMAIL_REPLY_TO ?? BUSINESS.contactEmail;
 
 // --------------------------------------------------------------------------
 // Shared chrome
@@ -187,6 +187,39 @@ function ticketsHtml(tickets: TicketRow[], qrUrls: Map<string, string>): string 
 }
 
 // --------------------------------------------------------------------------
+// Internal: a booking just came in
+// --------------------------------------------------------------------------
+
+/**
+ * One-line heads-up sent on every confirmed booking, from both the Stripe
+ * webhook and admin manual orders (anywhere sendConfirmationEmail is called).
+ * Best-effort — a failure here must never take down the customer's ticket
+ * email, which is why the caller swallows its own errors.
+ */
+async function sendSaleNotification(
+  order: OrderRow,
+  event: EventWithVenue
+): Promise<void> {
+  const html = shell(`
+    <h1 style="font-size:22px;margin:16px 0 12px;">New sale</h1>
+    <table style="border-collapse:collapse;width:100%;">
+      ${detailRow("Workshop", event.title)}
+      ${detailRow("Date", formatDate(event.starts_at))}
+      ${detailRow("Amount paid", formatMoney(order.amount_cents))}
+      ${detailRow("Confirmation", order.confirmation_code)}
+    </table>
+  `);
+
+  await resend().emails.send({
+    from: from(),
+    to: "madrazodarcy@gmail.com",
+    replyTo: BUSINESS.bookingEmail,
+    subject: `New sale — ${event.title}, ${formatMoney(order.amount_cents)}`,
+    html,
+  });
+}
+
+// --------------------------------------------------------------------------
 // Confirmation — this email IS the ticket
 // --------------------------------------------------------------------------
 
@@ -276,6 +309,12 @@ export async function sendConfirmationEmail(
       },
     ],
   });
+
+  try {
+    await sendSaleNotification(order, event);
+  } catch (err) {
+    console.error(`[email] sale notification failed for ${order.confirmation_code}`, err);
+  }
 }
 
 // --------------------------------------------------------------------------
