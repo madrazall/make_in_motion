@@ -52,7 +52,9 @@ export const MAX_SEATS_PER_ORDER = 8;
 export const DEFAULT_MIN_TO_RUN = 6;
 
 /** Blanket, every event. Plan §18. */
-export const AGE_RESTRICTION = "21+";
+// No blanket age policy — venues set their own. We defer to whatever the
+// host venue requires rather than asserting an age ourselves.
+export const AGE_RESTRICTION = "Age policy set by venue";
 
 /**
  * How people pay, right now.

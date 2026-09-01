@@ -91,7 +91,7 @@ export default async function WorkshopPage({
               <Spec label="Mess level">
                 {workshop.bar_friendly ? "Low — bar friendly" : "Higher — needs a space that can take it"}
               </Spec>
-              <Spec label="Age">{AGE_RESTRICTION} at public events</Spec>
+              <Spec label="Age">{AGE_RESTRICTION}</Spec>
             </dl>
 
             <p className="mt-4 text-xs leading-relaxed text-ink/50">

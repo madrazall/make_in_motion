@@ -256,7 +256,7 @@ export async function sendConfirmationEmail(
     <p style="margin:28px 0 8px;font-family:Anton,'Arial Narrow',Impact,Haettenschweiler,sans-serif;font-size:20px;letter-spacing:.02em;text-transform:uppercase;color:#171522;">Before you come</p>
     <ul style="margin:0;padding-left:20px;font-size:14px;line-height:1.7;color:#3A3548;">
       <li><strong>Your ticket includes a drink chip.</strong> Use it at the bar — beer, cocktail, or a mocktail if you're not drinking.</li>
-      <li><strong>21+ only.</strong> These events are hosted at breweries and eateries that require all guests to be 21 or older. Please bring valid ID.</li>
+      <li><strong>Age policy is set by ${event.venue.name}.</strong> Check with them if you're unsure, and bring valid ID just in case.</li>
       <li><strong>Wear something you don't mind getting messy.</strong> Depending on the project that's paint, dye, ink, wax or soil. We bring aprons, but accidents are part of it.</li>
       <li><strong>We start on time</strong> so everyone finishes together. If you're more than 15 minutes late we may not be able to catch you up.</li>
       <li><strong>Just bring yourself.</strong> We bring all the supplies and setup.</li>
@@ -332,7 +332,7 @@ export async function sendReminderEmail(
       ${event.venue.name}, ${event.venue.address}, ${event.venue.city}
     </p>
     <ul style="margin:0;padding-left:20px;font-size:14px;line-height:1.7;color:#3A3548;">
-      <li>Bring valid ID — 21+.</li>
+      <li>Age policy is set by ${event.venue.name} — bring valid ID just in case.</li>
       <li>Wear something you don't mind getting messy.</li>
       <li>We start on time. More than 15 minutes late and we may not be able to catch you up.</li>
     </ul>

@@ -1,7 +1,6 @@
 import { POLICY_TEXT } from "@/lib/policy";
 import {
   BUSINESS,
-  AGE_RESTRICTION,
   PAYMENT_MODE,
   PAYMENT_HANDLES,
   instagramUrl,
@@ -67,10 +66,11 @@ export default function FaqPage() {
         </Q>
 
         <Q q="Is there an age limit?">
-          Yes — <strong>{AGE_RESTRICTION} only</strong>. Our events are hosted at
-          breweries and eateries that require all guests to be 21 or older. Please bring
-          valid ID. This applies to everyone in your party, so if you're buying spots for
-          friends, let them know.
+          <strong>Age policy varies by venue.</strong> We don't set a blanket age limit
+          ourselves — many of our host venues are 21+, but the specific policy is theirs to
+          set. Check with the venue you're attending before you book, and bring valid ID
+          just in case. This applies to everyone in your party, so if you're buying spots
+          for friends, let them know to check too.
         </Q>
 
         <Q q="What's included in the ticket?">

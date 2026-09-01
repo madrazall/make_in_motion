@@ -150,7 +150,8 @@ export default async function BookedPage({
         <h2 className="font-bold">Before you come</h2>
         <ul className="mt-2 space-y-1.5 text-[15px] leading-relaxed text-ink/80 list-disc pl-5">
           <li>
-            <strong>21+ only</strong> — please bring valid ID.
+            <strong>Age policy is set by {event.venue.name}</strong> — check with them if
+            you're unsure, and bring valid ID just in case.
           </li>
           <li>Wear something you don't mind getting messy — depending on the project that's paint, dye, ink, wax or soil.</li>
           <li>

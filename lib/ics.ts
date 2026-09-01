@@ -47,7 +47,7 @@ export function buildEventIcs(params: {
     "",
     `${params.seats} spot${params.seats === 1 ? "" : "s"} reserved.`,
     `Confirmation: ${params.confirmationCode}`,
-    "21+ — please bring valid ID.",
+    `Age policy is set by ${params.venueName} — bring valid ID just in case.`,
     "Wear something you don't mind getting messy.",
     "",
     `Questions: ${BUSINESS.contactEmail} or ${BUSINESS.phone}`,

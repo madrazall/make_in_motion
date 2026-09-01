@@ -45,7 +45,7 @@ export async function createCheckoutSession(params: {
             unit_amount: params.unitAmountCents,
             product_data: {
               name: params.eventTitle,
-              description: `${params.eventWhen} · ${params.venueName} · 21+`,
+              description: `${params.eventWhen} · ${params.venueName}`,
             },
           },
         },

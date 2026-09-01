@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     template: `%s · ${BUSINESS.name}`,
   },
   description:
-    "A pop-up creative experience that turns your space into an interactive art night. Breweries, bars, and event spaces across Connecticut. 21+.",
+    "A pop-up creative experience that turns your space into an interactive art night. Breweries, bars, and event spaces across Connecticut. Age policy varies by venue.",
   openGraph: { siteName: BUSINESS.name, type: "website" },
 };
 
@@ -133,7 +133,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               </p>
             </div>
             <p className="mt-6 text-xs text-ink/35">
-              © {new Date().getFullYear()} {BUSINESS.name}. All public events 21+.
+              © {new Date().getFullYear()} {BUSINESS.name}. Age policy varies by venue.
               Ideal for breweries, bars &amp; event spaces.
             </p>
           </div>
