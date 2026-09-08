@@ -156,11 +156,6 @@ export default async function EventPage({
               />
             )}
           </div>
-
-          <p className="mt-4 px-1 text-xs leading-relaxed text-ink/55">
-            These events run with a minimum of {event.min_to_run} people. If we don't
-            reach it, we'll let you know 3 days ahead and refund you in full.
-          </p>
         </div>
       </div>
     </div>
